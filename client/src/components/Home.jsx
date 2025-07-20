@@ -11,9 +11,9 @@ const Home = () => {
                 <h1 className='font-bold text-lg mb-2'>Common Actions</h1>
 
                 <ul className='list-disc'>
-                    <li><Link to="/login" className='hover:underline'>Login</Link></li>
-                    <li><Link to="/blogs" className='hover:underline'>Blogs / Write-Ups</Link></li>
-                    <li><Link to="/chat" className='hover:underline'>Chatrooms</Link></li>
+                    <li><Link to="/login" className='underline'>Login</Link></li>
+                    <li><Link to="/blogs" className='underline'>Blogs / Write-Ups</Link></li>
+                    <li><Link to="/chat" className='underline'>Chatrooms</Link></li>
                 </ul>
             </div>
         </div>
