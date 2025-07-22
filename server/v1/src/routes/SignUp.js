@@ -22,8 +22,8 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: "Invalid email address." });
         }
 
-        if (typeof password !== 'string' || password.length < 9 || password.length > 14) {
-            return res.status(400).json({ error: "Password must be between 9 and 14 characters." });
+        if (typeof password !== 'string' || password.length < 8 || password.length > 20) {
+            return res.status(400).json({ error: "Password must be between 8 and 20 characters." });
         }
 
         const [userResult] = await db.execute('SELECT id FROM users where username = ?', [username]);
@@ -43,7 +43,9 @@ router.post('/', async (req, res) => {
         }
 
         const passwordHash = await bcrypt.hash(password, saltRounds);
-        await db.execute('INSERT INTO users (username, email, passwordHash) VALUES (?, ?, ?)', [username, email, passwordHash]);
+        const [result] = await db.execute('INSERT INTO users (username, email, passwordHash) VALUES (?, ?, ?)', [username, email, passwordHash]);
+        // Only add ROLE_USER by default
+        await db.execute('INSERT INTO user_role (user_id, role_id) VALUES (?, 1)', [result.insertId]);
 
         return res.status(200).json({ message: "User created successfully!" });
     } catch (e) {

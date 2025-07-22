@@ -14,7 +14,7 @@ const SignUp = () => {
     }
 
     function passwordValid(password) {
-        return password.length >= 8 && password.length <= 15;
+        return password.length >= 8 && password.length <= 20;
     }
 
     async function onFormSubmit(e) {

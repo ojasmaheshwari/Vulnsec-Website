@@ -24,11 +24,24 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: "Incorrect username or password" });
         }
 
+        // Get roles of user
+        const [rolesResult] = await db.execute(`SELECT * from users U
+                                                JOIN user_role UR
+                                                ON U.id = UR.user_id
+                                                JOIN roles R
+                                                ON UR.role_id = R.id
+                                                WHERE U.username = ?`, [username]);
+        const roles = [];
+        for (const role of rolesResult) {
+            roles.push(role.name);
+        }
+
         // User is valid, serve JWT
         const jwtPayload = {
+            uuid: user.uuid,
             email: user.email,
             username,
-            roles: ['ROLE_USER']
+            roles
         }
         const token = jwt.sign(jwtPayload, "jkdds7e398zdjhkdisu32", { expiresIn: 3600000 })
 
