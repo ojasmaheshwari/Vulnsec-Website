@@ -43,9 +43,15 @@ router.post('/', async (req, res) => {
             username,
             roles
         }
-        const token = jwt.sign(jwtPayload, "jkdds7e398zdjhkdisu32", { expiresIn: 3600000 })
+        const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: 3600000 })
 
-        res.status(200).cookie('jwt', token, { sameSite: "strict", secure: false, httpOnly: true, maxAge: 3600000 }).json({ "message": "Logged in" })
+        const toSend = {
+            username,
+            email: user.email,
+            message: "Logged in"
+        }
+
+        res.status(200).cookie('jwt', token, { sameSite: "strict", secure: false, httpOnly: true, maxAge: 3600000 }).json(toSend)
 
     } catch (e) {
         console.log(e);

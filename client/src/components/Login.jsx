@@ -1,8 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { SERVER_URL } from '../api_endpoints';
+import UserContext from '../contexts/userContext';
+import { useContext } from 'react';
 
 const Login = () => {
+    const { user, setUser } = useContext(UserContext);
 
     async function onFormSubmit(e) {
         e.preventDefault();
@@ -27,6 +30,11 @@ const Login = () => {
                 alert(response.error);
             } else {
                 alert(response.message);
+
+                setUser({
+                    username: response.username,
+                    email: response.email
+                })
             }
         } catch (e) {
             alert(e);
