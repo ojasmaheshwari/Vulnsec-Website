@@ -13,7 +13,7 @@ const Navbar = () => {
             </h1>
 
             <ul className='flex gap-4 mx-4'>
-                {user ? <li>Welcome {user.username}</li> : (
+                {user ? <li>Welcome <Link to='/profile' className='underline'>{user.username}</Link></li> : (
                     <>
                         <li>
                             <Link to="/login" className='hover:underline'>Login</Link>

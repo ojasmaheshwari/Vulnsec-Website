@@ -41,14 +41,22 @@ router.post('/', async (req, res) => {
             uuid: user.uuid,
             email: user.email,
             username,
-            roles
+            roles,
+            emailVerified: user.emailVerified
         }
         const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: 3600000 })
 
         const toSend = {
-            username,
-            email: user.email,
-            message: "Logged in"
+            user: {
+                username: user.username,
+                email: user.email,
+                uuid: user.uuid,
+                emailVerified: user.emailVerified,
+                fullName: user.fullName,
+                about: user.about,
+                profilePictureLink: user.profilePictureLink
+            },
+            message: "Logged in",
         }
 
         res.status(200).cookie('jwt', token, { sameSite: "strict", secure: false, httpOnly: true, maxAge: 3600000 }).json(toSend)

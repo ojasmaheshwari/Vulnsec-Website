@@ -43,7 +43,7 @@ router.post('/', async (req, res) => {
         }
 
         const passwordHash = await bcrypt.hash(password, saltRounds);
-        const [result] = await db.execute('INSERT INTO users (username, email, passwordHash) VALUES (?, ?, ?)', [username, email, passwordHash]);
+        const [result] = await db.execute('INSERT INTO users (username, email, passwordHash, fullName, about, profilePictureLink) VALUES (?, ?, ?, ?, "", "")', [username, email, passwordHash, username]);
         // Only add ROLE_USER by default
         await db.execute('INSERT INTO user_role (user_id, role_id) VALUES (?, 1)', [result.insertId]);
 

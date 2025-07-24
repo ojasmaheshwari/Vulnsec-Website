@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom'
 import { SERVER_URL } from '../api_endpoints';
 import UserContext from '../contexts/userContext';
 import { useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
     const { user, setUser } = useContext(UserContext);
+    const navigate = useNavigate()
 
     async function onFormSubmit(e) {
         e.preventDefault();
@@ -29,12 +31,13 @@ const Login = () => {
             if (req.status != 200) {
                 alert(response.error);
             } else {
-                alert(response.message);
+                setUser(response.user)
 
-                setUser({
-                    username: response.username,
-                    email: response.email
-                })
+                if (!response.user.emailVerified) {
+                    navigate('/verify-email');
+                } else {
+                    alert('Logged in!')
+                }
             }
         } catch (e) {
             alert(e);

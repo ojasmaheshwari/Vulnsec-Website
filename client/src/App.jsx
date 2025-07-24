@@ -7,9 +7,15 @@ import SignUp from './components/SignUp'
 import UserContext from './contexts/userContext'
 import { useEffect, useState } from 'react'
 import { SERVER_URL } from './api_endpoints'
+import EmailVerification from './components/EmailVerification'
+import UserLoadingContext from './contexts/userLoadingContext'
+import Profile from './components/Profile'
+import ForgotPassword from './components/ForgotPassword'
+import PasswordReset from './components/PasswordReset'
 
 function App() {
   const [user, setUser] = useState(null);
+  const [userLoading, setUserLoading] = useState(true);
 
   useEffect(() => {
     fetch(`${SERVER_URL}/user`, {
@@ -17,24 +23,36 @@ function App() {
       credentials: "include"
     })
       .then(res => {
-        if (!res.ok) { throw new Error("Unauthorized") };
+        if (!res.ok) {
+          throw new Error("Unauthorized")
+        };
         return res.json();
       })
-      .then(data => setUser({ username: data.username, email: data.email }))
-      .catch(err => console.error("Error:", err));
+      .then(data => {
+        setUser(data.user)
+      })
+      .catch(err => console.error("Error:", err))
+      .finally(() => setUserLoading(false))
+
   }, []);
 
   return (
     <>
       <BrowserRouter>
         <UserContext.Provider value={{ user, setUser }}>
-          <Navbar />
-          <Routes>
-            <Route index element={<Home />}></Route>
-            <Route path="*" element={<NotFound />}></Route>
-            <Route path='/login' element={<Login />}></Route>
-            <Route path='/sign-up' element={<SignUp />}></Route>
-          </Routes>
+          <UserLoadingContext.Provider value={{ userLoading, setUserLoading }}>
+            <Navbar />
+            <Routes>
+              <Route index element={<Home />}></Route>
+              <Route path="*" element={<NotFound />}></Route>
+              <Route path='/login' element={<Login />}></Route>
+              <Route path='/sign-up' element={<SignUp />}></Route>
+              <Route path='/verify-email' element={<EmailVerification />}></Route>
+              <Route path='/profile' element={<Profile />}></Route>
+              <Route path='/forgot-password' element={<ForgotPassword />}></Route>
+              <Route path='/password-reset' element={<PasswordReset />}></Route>
+            </Routes>
+          </UserLoadingContext.Provider>
         </UserContext.Provider>
       </BrowserRouter>
     </>
