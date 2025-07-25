@@ -11,6 +11,7 @@ const PasswordReset = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const [isInvalidToken, setIsInvalidToken] = useState(false)
+    const [processState, setProcessState] = useState("PENDING")
 
     const [token, setToken] = useState(searchParams.get('token'))
 
@@ -44,6 +45,8 @@ const PasswordReset = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setProcessState("SENDING")
+
         if (newPassword !== confirmPassword) {
             setError('Passwords do not match');
             setSuccess('');
@@ -75,6 +78,8 @@ const PasswordReset = () => {
             setNewPassword("")
             setConfirmPassword("")
         }
+
+        setProcessState("DONE")
     };
 
     if (!token || token === "") {
@@ -116,7 +121,8 @@ const PasswordReset = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
+                    className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition disabled:bg-gray-400 disabled:cursor-progress"
+                    disabled={processState === "SENDING"}
                 >
                     Reset Password
                 </button>

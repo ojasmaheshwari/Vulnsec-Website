@@ -20,7 +20,8 @@ router.get('/', verifyToken, async (req, res) => {
             emailVerified: user.emailVerified,
             fullName: user.fullName,
             about: user.about,
-            profilePictureLink: user.profilePictureLink
+            profilePictureLink: user.profilePictureLink,
+            roles: req.user.roles
         }
     }
 

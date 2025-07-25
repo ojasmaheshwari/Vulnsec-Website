@@ -26,6 +26,7 @@ const verifyEmailTokenRoute = require('./routes/verifyEmailToken')
 const sendRecoveryEmailRoute = require('./routes/sendRecoveryEmail')
 const checkRecoveryTokenRoute = require('./routes/checkRecoveryToken')
 const resetPasswordRoute = require('./routes/resetPassword')
+const writeupRoute = require('./routes/Writeups')
 
 app.get('/', (req, res) => {
     res.send('Welcome to the API!');
@@ -39,6 +40,7 @@ app.use('/verify-token-email', verifyEmailTokenRoute)
 app.use('/send-recovery-mail', sendRecoveryEmailRoute)
 app.use('/check-recovery-token', checkRecoveryTokenRoute)
 app.use('/reset-password', resetPasswordRoute)
+app.use('/writeups', writeupRoute)
 
 app.listen(port, () => {
     console.log(`API server listening at http://localhost:${port}`);

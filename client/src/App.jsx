@@ -12,6 +12,9 @@ import UserLoadingContext from './contexts/userLoadingContext'
 import Profile from './components/Profile'
 import ForgotPassword from './components/ForgotPassword'
 import PasswordReset from './components/PasswordReset'
+import WriteUpEditor from './components/WriteUpEditor'
+import WriteUp from './components/WriteUp'
+import AllWriteUps from './components/AllWriteUps'
 
 function App() {
   const [user, setUser] = useState(null);
@@ -51,6 +54,9 @@ function App() {
               <Route path='/profile' element={<Profile />}></Route>
               <Route path='/forgot-password' element={<ForgotPassword />}></Route>
               <Route path='/password-reset' element={<PasswordReset />}></Route>
+              <Route path='/create-writeup' element={<WriteUpEditor />}></Route>
+              <Route path='/writeups/:uuid' element={<WriteUp />}></Route>
+              <Route path='/writeups' element={<AllWriteUps />}></Route>
             </Routes>
           </UserLoadingContext.Provider>
         </UserContext.Provider>

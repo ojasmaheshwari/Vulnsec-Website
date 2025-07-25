@@ -1,7 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import UserContext from '../contexts/userContext'
+import { useContext } from 'react'
 
 const Home = () => {
+    const { user, setUser } = useContext(UserContext);
+
     return (
         <div className='w-full h-screen flex items-center flex-col'>
             <h1 className='text-4xl font-bold mt-32'>VulnSec</h1>
@@ -12,8 +16,9 @@ const Home = () => {
 
                 <ul className='list-disc'>
                     <li><Link to="/login" className='underline'>Login</Link></li>
-                    <li><Link to="/blogs" className='underline'>Blogs / Write-Ups</Link></li>
+                    <li><Link to="/writeups" className='underline'>Blogs / Write-Ups</Link></li>
                     <li><Link to="/chat" className='underline'>Chatrooms</Link></li>
+                    {user && (user.roles.includes('ROLE_VULNSEC_MEMBER') || user.roles.includes('ROLE_ADMIN')) && <li><Link to="/create-writeup" className='underline'>Create writeups</Link></li>}
                 </ul>
             </div>
         </div>
