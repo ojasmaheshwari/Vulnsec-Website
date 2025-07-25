@@ -77,6 +77,7 @@ import { SERVER_URL } from "/src/api_endpoints"
 import UserContext from "/src/contexts/userContext"
 import UserLoadingContext from "/src/contexts/userLoadingContext"
 import Loader from "/src/components/Loader"
+import { CLIENT_URL } from "/src/api_endpoints"
 
 const MainToolbarContent = ({
   onHighlighterClick,
@@ -198,7 +199,7 @@ export function SimpleEditor() {
     if (res.status !== 200) {
       alert(`Something went wrong. ${jsonData.error}`)
     } else {
-      alert(`Blog posted. Share with URL https://localhost:5173/writeups/${jsonData.data.uuid}`)
+      alert(`Blog posted. Share with URL ${CLIENT_URL}/writeups/${jsonData.data.uuid}`)
     }
   };
 
