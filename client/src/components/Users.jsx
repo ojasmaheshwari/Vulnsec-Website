@@ -2,6 +2,7 @@ import { SERVER_URL } from '/src/api_endpoints';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Loader from './Loader';
+import { defaultProfilePic } from './Profile';
 
 const Users = () => {
     const { username } = useParams();
@@ -54,7 +55,7 @@ const Users = () => {
     return (
         <div className="min-h-screen bg-black text-green-400 font-mono flex flex-col items-center justify-center p-6">
             <img
-                src={data.profilePictureLink}
+                src={data.profilePictureLink || defaultProfilePic}
                 alt="Profile"
                 className="w-32 h-32 rounded-full border-2 border-green-400 mb-4 shadow-md bg-center"
             />
