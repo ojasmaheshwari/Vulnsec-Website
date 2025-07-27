@@ -157,7 +157,7 @@ router.post('/', verifyToken, verifyEmail, async (req, res) => {
                                                 ON U.id = UR.user_id
                                                 JOIN roles R
                                                 ON UR.role_id = R.id
-                                                WHERE U.username = ?`, [username]);
+                                                WHERE U.id = ?`, [userId]);
         const roles = [];
         for (const role of rolesResult) {
             roles.push(role.name);
