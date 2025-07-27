@@ -1,4 +1,6 @@
 require('dotenv').config({ path: "../.env" })
+const https = require('https');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const mysql = require('mysql2/promise');
@@ -10,7 +12,7 @@ const port = 8080;
 const bodyParser = require('body-parser');
 
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: process.env.FRONTEND_URL,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true
 }));
@@ -42,6 +44,14 @@ app.use('/check-recovery-token', checkRecoveryTokenRoute)
 app.use('/reset-password', resetPasswordRoute)
 app.use('/writeups', writeupRoute)
 
-app.listen(port, () => {
-    console.log(`API server listening at http://localhost:${port}`);
+// Read SSL certificate files
+const options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+};
+
+// Create HTTPS server
+https.createServer(options, app).listen(443, () => {
+  console.log('HTTPS Server running on port 443');
 });
+
