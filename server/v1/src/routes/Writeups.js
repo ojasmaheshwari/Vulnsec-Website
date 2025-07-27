@@ -152,18 +152,13 @@ router.post('/', verifyToken, verifyEmail, async (req, res) => {
         const userId = results[0].id;
 
         // Get roles of user
-        const [rolesResult] = await db.execute(`SELECT * from users U
-                                                JOIN user_role UR
-                                                ON U.id = UR.user_id
-                                                JOIN roles R
-                                                ON UR.role_id = R.id
-                                                WHERE U.id = ?`, [userId]);
+        const [rolesResult] = await db.execute(`SELECT role_id FROM user_role WHERE user_id = ?`, [userId]);
         const roles = [];
         for (const role of rolesResult) {
-            roles.push(role.name);
+            roles.push(role.role_id);
         }
 
-        if (!(roles.includes("ROLE_ADMIN") || roles.includes("ROLE_VULNSEC_MEMBER"))) {
+        if (!(roles.includes(3) || roles.includes(2))) {
             return res.status(403).json({ error: "You do not have permission to post writeups" })
         }
 
