@@ -46,12 +46,12 @@ app.use('/writeups', writeupRoute)
 
 // Read SSL certificate files
 const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
 };
 
 // Create HTTPS server
 https.createServer(options, app).listen(443, () => {
-  console.log('HTTPS Server running on port 443');
+    console.log('HTTPS Server running on port 443');
 });
 
