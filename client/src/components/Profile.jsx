@@ -54,82 +54,76 @@ const Profile = () => {
     if (userLoading) return <Loader />;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-100 flex items-center justify-center px-4 py-8">
-            <div className="w-full max-w-xl bg-white p-8 rounded-2xl shadow-xl">
-                <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">Edit Profile</h2>
+        <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center px-4 py-8">
+            <div className="w-full max-w-xl bg-gray-900/80 border border-green-400 p-8 rounded-xl shadow-lg shadow-green-500/20">
+                <h2 className="text-3xl font-bold text-green-300 mb-6 text-center tracking-wide">~ Edit Profile ~</h2>
 
                 <div className="flex justify-center mb-6">
                     <img
                         src={profile.profilePictureLink || defaultProfilePic}
                         onError={(e) => e.target.src = defaultProfilePic}
                         alt="Profile"
-                        className="w-28 h-28 rounded-full border-2 border-gray-300 object-cover"
+                        className="w-28 h-28 rounded-full border-2 border-green-500 object-cover shadow-md"
                     />
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Username */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600">Username</label>
+                        <label className="block text-sm text-green-300">Username</label>
                         <input
                             type="text"
                             value={profile.username || ""}
                             readOnly
-                            className="w-full mt-1 px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-500"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500"
                         />
                     </div>
 
-                    {/* Full Name */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600">Full Name</label>
+                        <label className="block text-sm text-green-300">Full Name</label>
                         <input
                             type="text"
                             name="fullName"
                             value={profile.fullName || ""}
                             onChange={handleChange}
-                            className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         />
                     </div>
 
-                    {/* About */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600">About</label>
+                        <label className="block text-sm text-green-300">About</label>
                         <textarea
                             name="about"
                             value={profile.about || ""}
                             onChange={handleChange}
                             rows={3}
-                            className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 resize-none"
                         />
                     </div>
 
-                    {/* Email Verified */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600">Email Verified</label>
+                        <label className="block text-sm text-green-300">Email Verified</label>
                         <input
                             type="text"
                             value={profile.emailVerified ? 'Yes' : 'No'}
                             readOnly
-                            className="w-full mt-1 px-4 py-2 bg-gray-100 border border-gray-300 rounded-md text-gray-500"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500"
                         />
                     </div>
 
-                    {/* Profile Picture Link */}
                     <div>
-                        <label className="block text-sm font-medium text-gray-600">Profile Picture URL</label>
+                        <label className="block text-sm text-green-300">Profile Picture URL</label>
                         <input
                             type="text"
                             name="profilePictureLink"
                             value={profile.profilePictureLink || ""}
                             onChange={handleChange}
-                            className="w-full mt-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
                         />
                     </div>
 
-                    {/* Submit */}
                     <button
                         type="submit"
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded-md transition duration-200"
+                        className="w-full bg-green-700 hover:bg-green-600 text-black font-bold py-2 rounded-md transition duration-300 shadow-md shadow-green-500/30"
                     >
                         Save Changes
                     </button>

@@ -58,7 +58,6 @@ const WriteUp = () => {
                 //     Selection
                 // ])
                 const jsonContent = JSON.parse(data.content)
-                console.log(jsonContent)
                 setContent(JSON.parse(jsonContent))
             }).catch(e => console.error(e)).finally(() => setLoading(false))
 
