@@ -56,7 +56,7 @@ const Users = () => {
             <img
                 src={data.profilePictureLink}
                 alt="Profile"
-                className="w-32 h-32 rounded-full border-2 border-green-400 mb-4 shadow-md"
+                className="w-32 h-32 rounded-full border-2 border-green-400 mb-4 shadow-md bg-center"
             />
             <div className="bg-green-900/10 border border-green-400 p-4 rounded-xl w-full max-w-md shadow-lg">
                 <div className="mb-2">
