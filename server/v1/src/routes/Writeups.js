@@ -48,6 +48,8 @@ router.get('/:uuid', async (req, res) => {
 
         const [userResults] = await db.execute('SELECT * FROM users WHERE id = ?', [writeup.author_id])
         const userUuid = userResults[0].uuid;
+        const username = userResults[0].username;
+        const userProfilePic = userResults[0].profilePictureLink;
 
         const toSend = {
             data: {
@@ -55,7 +57,14 @@ router.get('/:uuid', async (req, res) => {
                 description: writeup.description,
                 thumbnail: writeup.thumbnail_url,
                 userId: userUuid,
-                content: writeup.content
+                content: writeup.content,
+                authorUsername: username,
+                writeUpUuid: writeup.uuid,
+                updated_at: writeup.updated_at,
+                created_at: writeup.created_at,
+                authorProfilePic: userProfilePic,
+                // likes: writeup.likes,
+                // dislikes: writeup.dislikes
             }
         }
 
@@ -65,6 +74,60 @@ router.get('/:uuid', async (req, res) => {
         return res.status(500).json({ error: "Internal server error" })
     }
 })
+
+/*
+router.post('/:uuid/like', async (req, res) => {
+    try {
+        const uuid = req.params.uuid;
+
+        if (!uuid) {
+            return res.status(400).json({ error: "uuid is required" })
+        }
+
+        const [results] = await db.execute('SELECT * FROM writeups WHERE uuid = ?', [uuid])
+        if (results.length === 0) {
+            res.status(404).send({ error: "Writeup not found" })
+        }
+
+        await db.execute('UPDATE writeups SET likes = likes + 1 WHERE uuid = ?', [uuid])
+
+        const toSend = {
+            message: "Liked successfully",
+        }
+
+        return res.status(200).json(toSend)
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Internal server error" })
+    }
+})
+
+router.post('/:uuid/dislike', async (req, res) => {
+    try {
+        const uuid = req.params.uuid;
+
+        if (!uuid) {
+            return res.status(400).json({ error: "uuid is required" })
+        }
+
+        const [results] = await db.execute('SELECT * FROM writeups WHERE uuid = ?', [uuid])
+        if (results.length === 0) {
+            res.status(404).send({ error: "Writeup not found" })
+        }
+
+        await db.execute('UPDATE writeups SET dislikes = dislikes + 1 WHERE uuid = ?', [uuid])
+
+        const toSend = {
+            message: "Disliked successfully",
+        }
+
+        return res.status(200).json(toSend)
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Internal server error" })
+    }
+})
+*/
 
 router.post('/', verifyToken, verifyEmail, async (req, res) => {
     try {

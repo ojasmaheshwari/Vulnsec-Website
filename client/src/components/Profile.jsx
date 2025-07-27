@@ -5,7 +5,7 @@ import UserContext from '../contexts/userContext';
 import Loader from './Loader';
 import { SERVER_URL } from '../api_endpoints';
 
-const defaultProfilePic = "https://static.vecteezy.com/system/resources/thumbnails/020/765/399/small_2x/default-profile-account-unknown-icon-black-silhouette-free-vector.jpg";
+export const defaultProfilePic = "https://api.dicebear.com/7.x/identicon/svg?seed=anon";
 
 const Profile = () => {
     const { userLoading } = useContext(UserLoadingContext);

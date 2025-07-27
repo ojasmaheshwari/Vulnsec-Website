@@ -15,6 +15,7 @@ import PasswordReset from './components/PasswordReset'
 import WriteUpEditor from './components/WriteUpEditor'
 import WriteUp from './components/WriteUp'
 import AllWriteUps from './components/AllWriteUps'
+import Users from './components/Users'
 
 function App() {
   const [user, setUser] = useState(null);
@@ -58,6 +59,7 @@ function App() {
                 <Route path='/create-writeup' element={<WriteUpEditor />}></Route>
                 <Route path='/writeups/:uuid' element={<WriteUp />}></Route>
                 <Route path='/writeups' element={<AllWriteUps />}></Route>
+                <Route path='/users/:username' element={<Users />}></Route>
               </Routes>
             </div>
           </UserLoadingContext.Provider>
