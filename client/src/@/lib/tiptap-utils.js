@@ -1,4 +1,5 @@
 import { NodeSelection } from "@tiptap/pm/state"
+import { UPLOAD_PRESET, CLOUDINARY_UPLOAD_URL } from "/src/api_endpoints";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024 // 5MB
 
@@ -228,26 +229,52 @@ export function isNodeTypeSelected(editor, types = []) {
 export const handleImageUpload = async (file, onProgress, abortSignal) => {
   // Validate file
   if (!file) {
-    throw new Error("No file provided")
+    throw new Error("No file provided");
   }
 
   if (file.size > MAX_FILE_SIZE) {
-    throw new Error(`File size exceeds maximum allowed (${MAX_FILE_SIZE / (1024 * 1024)}MB)`)
+    throw new Error(`File size exceeds maximum allowed (${MAX_FILE_SIZE / (1024 * 1024)}MB)`);
   }
 
-  // For demo/testing: Simulate upload progress
-  for (let progress = 0; progress <= 100; progress += 10) {
-    if (abortSignal?.aborted) {
-      throw new Error("Upload cancelled")
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
+
+  const xhr = new XMLHttpRequest();
+
+  const uploadPromise = new Promise((resolve, reject) => {
+    xhr.upload.addEventListener("progress", (event) => {
+      if (event.lengthComputable) {
+        const progress = Math.round((event.loaded / event.total) * 100);
+        onProgress?.({ progress });
+      }
+    });
+
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4) {
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          resolve(response.secure_url); // Cloudinary's hosted image URL
+        } else {
+          reject(new Error("Upload failed"));
+        }
+      }
+    };
+
+    xhr.onerror = () => reject(new Error("Upload error"));
+    xhr.onabort = () => reject(new Error("Upload aborted"));
+
+    if (abortSignal) {
+      abortSignal.addEventListener("abort", () => {
+        xhr.abort();
+      });
     }
-    await new Promise((resolve) => setTimeout(resolve, 500))
-    onProgress?.({ progress })
-  }
 
-  return "/images/tiptap-ui-placeholder-image.jpg"
+    xhr.open("POST", CLOUDINARY_UPLOAD_URL);
+    xhr.send(formData);
+  });
 
-  // Uncomment for production use:
-  // return convertFileToBase64(file, abortSignal);
+  return await uploadPromise;
 }
 
 /**
@@ -324,7 +351,7 @@ export function isAllowedUri(
   }
 
   return (!uri || uri.replace(ATTR_WHITESPACE, "").match(new RegExp(// eslint-disable-next-line no-useless-escape
-  `^(?:(?:${allowedProtocols.join("|")}):|[^a-z]|[a-z0-9+.\-]+(?:[^a-z+.\-:]|$))`, "i")));
+    `^(?:(?:${allowedProtocols.join("|")}):|[^a-z]|[a-z0-9+.\-]+(?:[^a-z+.\-:]|$))`, "i")));
 }
 
 export function sanitizeUrl(inputUrl, baseUrl, protocols) {
