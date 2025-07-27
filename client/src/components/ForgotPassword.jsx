@@ -33,21 +33,26 @@ const ForgotPassword = () => {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 px-4">
-            <div className="bg-white shadow-2xl rounded-2xl p-8 w-full max-w-md">
+        <div className="flex items-center justify-center min-h-screen bg-black text-green-400 px-4 font-mono relative overflow-hidden">
+            {/* Hacker Matrix Effect */}
+            <div className="absolute inset-0 z-0 opacity-20 pointer-events-none animate-hacker-bg"></div>
+
+            <div className="relative z-10 bg-[#0f0f0f] border border-green-500 shadow-2xl rounded-xl p-8 w-full max-w-md backdrop-blur-md">
                 <div className="flex flex-col items-center">
-                    <MailCheck className="text-blue-500 mb-2" size={40} />
-                    <h2 className="text-3xl font-bold text-gray-800 mb-1">Forgot Password</h2>
-                    <p className="text-sm text-gray-500 text-center mb-6">Enter your email to receive a recovery link.</p>
+                    <MailCheck className="text-green-400 mb-2" size={40} />
+                    <h2 className="text-3xl font-bold text-green-300 mb-1">Forgot Password</h2>
+                    <p className="text-sm text-green-500 text-center mb-6">
+                        Enter your email to receive a recovery link.
+                    </p>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                        <label className="block text-sm mb-1 text-green-400">Email Address</label>
                         <input
                             type="email"
                             placeholder="you@example.com"
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition"
+                            className="w-full px-4 py-2 bg-black border border-green-500 rounded-lg text-green-300 placeholder-green-600 focus:outline-none focus:ring-2 focus:ring-green-400"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             required
@@ -55,7 +60,7 @@ const ForgotPassword = () => {
                     </div>
                     <button
                         type="submit"
-                        className="w-full flex items-center justify-center gap-2 bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        className="w-full flex items-center justify-center gap-2 bg-green-500 text-black font-semibold py-2.5 rounded-lg hover:bg-green-400 transition disabled:bg-gray-600 disabled:cursor-not-allowed"
                         disabled={emailSent === 'SENDING'}
                     >
                         {emailSent === 'SENDING' ? (
@@ -70,7 +75,7 @@ const ForgotPassword = () => {
                 </form>
 
                 {message && (
-                    <div className="mt-5 text-sm text-center text-gray-700 bg-gray-100 p-2 rounded-md border border-gray-200">
+                    <div className="mt-5 text-sm text-green-300 bg-black p-2 rounded-md border border-green-600">
                         {message}
                     </div>
                 )}

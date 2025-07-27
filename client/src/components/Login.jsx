@@ -43,50 +43,55 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center px-4">
+        <div className="min-h-screen bg-black text-green-400 flex items-center justify-center px-4 font-mono relative overflow-hidden">
+            {/* Optional animated matrix effect */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="w-full h-full animate-pulse bg-[radial-gradient(#0f0_1px,transparent_1px)] [background-size:20px_20px] opacity-10"></div>
+            </div>
+
             <form
                 onSubmit={onFormSubmit}
-                className="w-full max-w-md bg-white/30 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-8 space-y-6 animate-fade-in"
+                className="relative z-10 w-full max-w-md bg-black/70 border border-green-600 rounded-xl shadow-[0_0_30px_#00ff00aa] p-8 space-y-6"
             >
                 <div className="text-center">
-                    <h2 className="text-3xl font-extrabold text-gray-800">Welcome Back</h2>
-                    <p className="text-gray-600 text-sm mt-1">
-                        Don’t have an account?{' '}
-                        <Link to="/sign-up" className="text-blue-600 hover:underline font-medium">
+                    <h2 className="text-3xl font-bold text-green-400 tracking-widest">LOGIN PORTAL</h2>
+                    <p className="text-green-500 text-sm mt-1">
+                        No account?{' '}
+                        <Link to="/sign-up" className="text-green-300 underline hover:text-green-100">
                             Sign Up
                         </Link>
                     </p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-                    <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-400 transition">
-                        <User className="w-5 h-5 text-gray-400 mr-2" />
+                    <label className="block text-sm text-green-300 mb-1">Username</label>
+                    <div className="flex items-center border border-green-600 rounded px-3 py-2 bg-black shadow-inner">
+                        <User className="w-5 h-5 text-green-500 mr-2" />
                         <input
                             type="text"
                             name="username"
                             required
-                            placeholder="yourusername"
-                            className="w-full bg-transparent outline-none placeholder-gray-400 text-sm"
+                            placeholder="h4ck3r"
+                            className="w-full bg-transparent outline-none placeholder-green-500 text-sm text-green-200"
                         />
                     </div>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <div className="flex items-center border border-gray-300 rounded-lg px-3 py-2 bg-white shadow-sm focus-within:ring-2 focus-within:ring-blue-400 relative transition">
-                        <Lock className="w-5 h-5 text-gray-400 mr-2" />
+                    <label className="block text-sm text-green-300 mb-1">Password</label>
+                    <div className="flex items-center border border-green-600 rounded px-3 py-2 bg-black relative shadow-inner">
+                        <Lock className="w-5 h-5 text-green-500 mr-2" />
                         <input
                             type={showPassword ? 'text' : 'password'}
                             name="password"
                             required
                             placeholder="••••••••"
-                            className="w-full bg-transparent outline-none placeholder-gray-400 text-sm pr-10"
+                            className="w-full bg-transparent outline-none placeholder-green-500 text-sm text-green-200 pr-10"
                         />
                         <button
                             type="button"
                             onClick={togglePassword}
-                            className="absolute right-3 text-gray-500 hover:text-gray-700 focus:outline-none"
+                            className="absolute right-3 text-green-400 hover:text-green-200 focus:outline-none"
                             tabIndex={-1}
                         >
                             {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -95,16 +100,16 @@ const Login = () => {
                 </div>
 
                 <div className="text-right">
-                    <Link to="/forgot-password" className="text-sm text-blue-600 hover:underline">
+                    <Link to="/forgot-password" className="text-sm text-green-400 underline hover:text-green-200">
                         Forgot Password?
                     </Link>
                 </div>
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-xl font-semibold hover:bg-blue-700 transition-all shadow-md"
+                    className="w-full bg-green-600 hover:bg-green-500 text-black py-2 rounded font-bold transition-all shadow-lg"
                 >
-                    Log In
+                    ENTER SYSTEM
                 </button>
             </form>
         </div>

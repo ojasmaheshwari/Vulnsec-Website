@@ -11,15 +11,15 @@ const Loader = () => {
     }, []);
 
     return (
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 to-gray-800 text-white px-4">
+        <div className="min-h-screen flex flex-col items-center justify-center bg-black text-green-400 px-4 font-mono">
             <img
-                src="https://cdn.dribbble.com/userupload/23237805/file/original-b01f81713802bdc20e9ce2ba275aec43.gif"
+                src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif"
                 alt="Loading..."
-                className="w-64 h-64 rounded-xl shadow-lg mb-6"
+                className="w-64 h-64 rounded-lg shadow-neon mb-6"
             />
             {showMessage && (
-                <p className="text-lg text-center text-gray-300 animate-pulse">
-                    Please be patient... We run on free servers 🙏
+                <p className="text-lg text-center animate-typing border-r-2 border-green-400 pr-2 whitespace-nowrap overflow-hidden">
+                    Initializing... Please stand by
                 </p>
             )}
         </div>

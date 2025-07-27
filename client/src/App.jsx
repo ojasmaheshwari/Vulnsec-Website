@@ -45,19 +45,21 @@ function App() {
         <UserContext.Provider value={{ user, setUser }}>
           <UserLoadingContext.Provider value={{ userLoading, setUserLoading }}>
             <Navbar />
-            <Routes>
-              <Route index element={<Home />}></Route>
-              <Route path="*" element={<NotFound />}></Route>
-              <Route path='/login' element={<Login />}></Route>
-              <Route path='/sign-up' element={<SignUp />}></Route>
-              <Route path='/verify-email' element={<EmailVerification />}></Route>
-              <Route path='/profile' element={<Profile />}></Route>
-              <Route path='/forgot-password' element={<ForgotPassword />}></Route>
-              <Route path='/password-reset' element={<PasswordReset />}></Route>
-              <Route path='/create-writeup' element={<WriteUpEditor />}></Route>
-              <Route path='/writeups/:uuid' element={<WriteUp />}></Route>
-              <Route path='/writeups' element={<AllWriteUps />}></Route>
-            </Routes>
+            <div className="pt-20">
+              <Routes>
+                <Route index element={<Home />}></Route>
+                <Route path="*" element={<NotFound />}></Route>
+                <Route path='/login' element={<Login />}></Route>
+                <Route path='/sign-up' element={<SignUp />}></Route>
+                <Route path='/verify-email' element={<EmailVerification />}></Route>
+                <Route path='/profile' element={<Profile />}></Route>
+                <Route path='/forgot-password' element={<ForgotPassword />}></Route>
+                <Route path='/password-reset' element={<PasswordReset />}></Route>
+                <Route path='/create-writeup' element={<WriteUpEditor />}></Route>
+                <Route path='/writeups/:uuid' element={<WriteUp />}></Route>
+                <Route path='/writeups' element={<AllWriteUps />}></Route>
+              </Routes>
+            </div>
           </UserLoadingContext.Provider>
         </UserContext.Provider>
       </BrowserRouter>

@@ -55,31 +55,33 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-black text-green-400 font-mono flex items-center justify-center px-4 py-8">
-            <div className="w-full max-w-xl bg-gray-900/80 border border-green-400 p-8 rounded-xl shadow-lg shadow-green-500/20">
-                <h2 className="text-3xl font-bold text-green-300 mb-6 text-center tracking-wide">~ Edit Profile ~</h2>
+            <div className="w-full max-w-xl bg-gray-900/80 border border-green-400 p-6 md:p-8 rounded-xl shadow-lg shadow-green-500/20">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-green-300 mb-6 text-center tracking-wide">
+                    ~ Edit Profile ~
+                </h2>
 
                 <div className="flex justify-center mb-6">
                     <img
                         src={profile.profilePictureLink || defaultProfilePic}
                         onError={(e) => e.target.src = defaultProfilePic}
                         alt="Profile"
-                        className="w-28 h-28 rounded-full border-2 border-green-500 object-cover shadow-md"
+                        className="w-24 h-24 sm:w-28 sm:h-28 rounded-full border-2 border-green-500 object-cover shadow-md"
                     />
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5 text-sm sm:text-base">
                     <div>
-                        <label className="block text-sm text-green-300">Username</label>
+                        <label className="block text-green-300">Username</label>
                         <input
                             type="text"
                             value={profile.username || ""}
                             readOnly
-                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500 text-xs sm:text-sm"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm text-green-300">Full Name</label>
+                        <label className="block text-green-300">Full Name</label>
                         <input
                             type="text"
                             name="fullName"
@@ -90,7 +92,7 @@ const Profile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm text-green-300">About</label>
+                        <label className="block text-green-300">About</label>
                         <textarea
                             name="about"
                             value={profile.about || ""}
@@ -101,17 +103,17 @@ const Profile = () => {
                     </div>
 
                     <div>
-                        <label className="block text-sm text-green-300">Email Verified</label>
+                        <label className="block text-green-300">Email Verified</label>
                         <input
                             type="text"
                             value={profile.emailVerified ? 'Yes' : 'No'}
                             readOnly
-                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500"
+                            className="w-full mt-1 px-4 py-2 bg-black border border-green-700 rounded-md text-green-500 text-xs sm:text-sm"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm text-green-300">Profile Picture URL</label>
+                        <label className="block text-green-300">Profile Picture URL</label>
                         <input
                             type="text"
                             name="profilePictureLink"
@@ -123,7 +125,7 @@ const Profile = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-green-700 hover:bg-green-600 text-black font-bold py-2 rounded-md transition duration-300 shadow-md shadow-green-500/30"
+                        className="w-full bg-green-700 hover:bg-green-600 text-black font-bold py-2 rounded-md transition duration-300 shadow-md shadow-green-500/30 text-sm sm:text-base"
                     >
                         Save Changes
                     </button>

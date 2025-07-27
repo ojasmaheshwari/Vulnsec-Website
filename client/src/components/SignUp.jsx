@@ -56,52 +56,62 @@ const SignUp = () => {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-200 via-purple-200 to-pink-200 flex items-center justify-center px-4">
-            <form onSubmit={onFormSubmit} className="bg-white/30 backdrop-blur-lg border border-white/20 shadow-xl rounded-2xl w-full max-w-sm p-8 space-y-5">
-                <h2 className="text-3xl font-extrabold text-center text-gray-800">Create Account</h2>
-                <p className="text-center text-gray-600 text-sm">
-                    Already have an account?{" "}
-                    <Link to="/login" className="text-blue-600 font-medium hover:underline">
+        <div className="min-h-screen bg-black text-green-400 flex items-center justify-center px-4 font-mono relative overflow-hidden">
+            {/* Matrix-style background */}
+            <div className="absolute inset-0 z-0 pointer-events-none">
+                <div className="w-full h-full animate-pulse bg-[radial-gradient(#0f0_1px,transparent_1px)] [background-size:20px_20px] opacity-10"></div>
+            </div>
+
+            <form
+                onSubmit={onFormSubmit}
+                className="relative z-10 bg-black/70 border border-green-600 shadow-[0_0_30px_#00ff00aa] rounded-xl w-full max-w-sm p-8 space-y-6"
+            >
+                <h2 className="text-3xl font-bold text-center text-green-400 tracking-widest">
+                    CREATE ACCOUNT
+                </h2>
+                <p className="text-center text-green-500 text-sm">
+                    Already have an account?{' '}
+                    <Link to="/login" className="text-green-300 underline hover:text-green-100">
                         Login
                     </Link>
                 </p>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Email</label>
+                    <label className="block text-sm text-green-300 mb-1">Email</label>
                     <input
                         type="email"
                         name="email"
                         required
                         placeholder="you@example.com"
-                        className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+                        className="w-full px-4 py-2 border border-green-600 rounded bg-black text-green-200 placeholder-green-500 outline-none focus:ring-2 focus:ring-green-400"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Username</label>
+                    <label className="block text-sm text-green-300 mb-1">Username</label>
                     <input
                         type="text"
                         name="username"
                         required
                         placeholder="yourusername"
-                        className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition"
+                        className="w-full px-4 py-2 border border-green-600 rounded bg-black text-green-200 placeholder-green-500 outline-none focus:ring-2 focus:ring-green-400"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">Password</label>
+                    <label className="block text-sm text-green-300 mb-1">Password</label>
                     <div className="relative">
                         <input
                             type={showPassword ? "text" : "password"}
                             name="password"
                             required
                             placeholder="********"
-                            className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 outline-none transition pr-10"
+                            className="w-full px-4 py-2 border border-green-600 rounded bg-black text-green-200 placeholder-green-500 outline-none pr-10 focus:ring-2 focus:ring-green-400"
                         />
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-400 hover:text-green-200"
                         >
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
@@ -110,9 +120,9 @@ const SignUp = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition font-medium"
+                    className="w-full bg-green-600 hover:bg-green-500 text-black py-2 rounded font-bold transition-all shadow-lg"
                 >
-                    Sign Up
+                    SIGN UP
                 </button>
             </form>
         </div>
