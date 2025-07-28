@@ -5,6 +5,8 @@ import UserContext from '../contexts/userContext';
 import Loader from './Loader';
 import { SERVER_URL } from '../api_endpoints';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 export const defaultProfilePic = "https://api.dicebear.com/7.x/identicon/svg?seed=anon";
 
 const Profile = () => {
@@ -12,6 +14,8 @@ const Profile = () => {
     const { user, setUser } = useContext(UserContext);
     const navigate = useNavigate();
     const [profile, setProfile] = useState({});
+
+    const [submitState, setSubmitState] = useState(true);
 
     useEffect(() => {
         if (!userLoading) {
@@ -27,8 +31,13 @@ const Profile = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        setSubmitState(false);
+
         const formData = new FormData(e.target);
         const data = Object.fromEntries(formData.entries());
+
+        const toastId = toast.loading("Updating profile...");
 
         const res = await fetch(`${SERVER_URL}/user`, {
             method: 'PATCH',
@@ -39,11 +48,25 @@ const Profile = () => {
 
         const jsonData = await res.json();
         if (res.status !== 200) {
-            alert(jsonData.error);
+            toast.update(toastId, {
+                render: jsonData.error || "Update failed",
+                type: "error",
+                isLoading: false,
+                autoClose: 4000,
+                closeButton: true
+            });
         } else {
             setUser(jsonData.user);
-            alert(jsonData.message);
+            toast.update(toastId, {
+                render: jsonData.message || "Profile updated!",
+                type: "success",
+                isLoading: false,
+                autoClose: 2000,
+                closeButton: true
+            });
         }
+
+        setSubmitState(true);
     };
 
     const handleChange = (e) => {
@@ -125,12 +148,15 @@ const Profile = () => {
 
                     <button
                         type="submit"
-                        className="w-full bg-green-700 hover:bg-green-600 text-black font-bold py-2 rounded-md transition duration-300 shadow-md shadow-green-500/30 text-sm sm:text-base"
+                        className="w-full bg-green-700 hover:bg-green-600 text-black font-bold py-2 rounded-md transition duration-300 shadow-md shadow-green-500/30 text-sm sm:text-base disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        disabled={!submitState}
                     >
                         Save Changes
                     </button>
                 </form>
             </div>
+
+            <ToastContainer position="bottom-right" theme="dark" />
         </div>
     );
 };

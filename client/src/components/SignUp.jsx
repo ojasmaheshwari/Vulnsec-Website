@@ -3,9 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { SERVER_URL } from '../api_endpoints';
 import { Eye, EyeOff } from 'lucide-react';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 const SignUp = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+
+    const [submitState, setSubmitState] = useState(true);
 
     function usernameValid(username) {
         const validPattern = /^[a-zA-Z0-9_]{1,10}$/;
@@ -18,6 +22,8 @@ const SignUp = () => {
 
     async function onFormSubmit(e) {
         e.preventDefault();
+
+        setSubmitState(false);
 
         const form = e.target;
         const formData = new FormData(form);
@@ -33,6 +39,8 @@ const SignUp = () => {
             return;
         }
 
+        const toastId = toast.loading("Creating account...");
+
         try {
             const response = await fetch(`${SERVER_URL}/sign-up`, {
                 method: 'POST',
@@ -46,13 +54,39 @@ const SignUp = () => {
             const result = await response.json();
 
             if (response.status !== 200) {
-                alert(result.error);
+                toast.update(toastId, {
+                    render: result.error || "Sign up failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 4000,
+                    closeButton: true
+                });
             } else {
-                navigate("/login");
+                toast.update(toastId, {
+                    render: "Account created! Redirecting...",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000,
+                    closeButton: true
+                });
+
+                setTimeout(() => {
+                    navigate("/login");
+                }, 1000);
             }
         } catch (err) {
-            alert("An error occurred. Please try again.");
+            toast.update(toastId, {
+                render: "An error occurred. Please try again.",
+                type: "error",
+                isLoading: false,
+                autoClose: 4000,
+                closeButton: true
+            });
         }
+
+        setSubmitState(true);
+        form.reset();
+        setShowPassword(false);
     }
 
     return (
@@ -111,7 +145,8 @@ const SignUp = () => {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-400 hover:text-green-200"
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-green-400 hover:text-green-200 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                            disabled={!submitState}
                         >
                             {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                         </button>
@@ -125,6 +160,7 @@ const SignUp = () => {
                     SIGN UP
                 </button>
             </form>
+            <ToastContainer position="bottom-right" theme="dark" />
         </div>
     );
 };

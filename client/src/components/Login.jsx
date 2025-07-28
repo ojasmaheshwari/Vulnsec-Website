@@ -4,18 +4,29 @@ import { SERVER_URL } from '../api_endpoints';
 import UserContext from '../contexts/userContext';
 import { User, Lock, Eye, EyeOff } from 'lucide-react';
 
+import { ToastContainer, toast } from 'react-toastify';
+
+
 const Login = () => {
     const { setUser } = useContext(UserContext);
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
 
+    const [submitState, setSubmitState] = useState(true);
+
     const togglePassword = () => setShowPassword(prev => !prev);
 
     async function onFormSubmit(e) {
         e.preventDefault();
+
+        setSubmitState(false);
+
         const form = e.target;
         const formData = new FormData(form);
         const data = Object.fromEntries(formData.entries());
+
+        // Show loading toast and store its ID
+        const toastId = toast.loading("Logging in...");
 
         try {
             const req = await fetch(`${SERVER_URL}/login`, {
@@ -28,18 +39,41 @@ const Login = () => {
             const response = await req.json();
 
             if (req.status !== 200) {
-                alert(response.error);
+                toast.update(toastId, {
+                    render: response.error || "Login failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 4000,
+                    closeButton: true
+                });
             } else {
                 setUser(response.user);
+
+                toast.update(toastId, {
+                    render: "Login successful!",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 2000,
+                    closeButton: true
+                });
+
                 if (!response.user.emailVerified) {
                     navigate('/verify-email');
-                } else {
-                    alert('Logged in!');
                 }
             }
         } catch (e) {
-            alert('Something went wrong. Please try again.');
+            toast.update(toastId, {
+                render: "Something went wrong. Please try again.",
+                type: "error",
+                isLoading: false,
+                autoClose: 4000,
+                closeButton: true
+            });
         }
+
+        setSubmitState(true);
+        form.reset();
+        setShowPassword(false);
     }
 
     return (
@@ -107,7 +141,8 @@ const Login = () => {
 
                 <button
                     type="submit"
-                    className="w-full bg-green-600 hover:bg-green-500 text-black py-2 rounded font-bold transition-all shadow-lg"
+                    className="w-full bg-green-600 hover:bg-green-500 text-black py-2 rounded font-bold transition-all shadow-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    disabled={!submitState}
                 >
                     ENTER SYSTEM
                 </button>
@@ -116,6 +151,8 @@ const Login = () => {
             <p className="mt-4 text-sm text-green-500 text-center">
                 Facing login problems? <span className="underline">Try enabling third-party cookies</span> in your browser.
             </p>
+
+            <ToastContainer position="bottom-right" theme="dark" />
         </div>
     );
 };
