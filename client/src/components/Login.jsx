@@ -43,7 +43,7 @@ const Login = () => {
     }
 
     return (
-        <div className="min-h-screen bg-black text-green-400 flex items-center justify-center px-4 font-mono relative overflow-hidden">
+        <div className="min-h-screen bg-black text-green-400 flex items-center justify-center px-4 font-mono relative overflow-hidden flex-col py-10">
             {/* Optional animated matrix effect */}
             <div className="absolute inset-0 z-0 pointer-events-none">
                 <div className="w-full h-full animate-pulse bg-[radial-gradient(#0f0_1px,transparent_1px)] [background-size:20px_20px] opacity-10"></div>
@@ -112,6 +112,10 @@ const Login = () => {
                     ENTER SYSTEM
                 </button>
             </form>
+            {/* Login issue note */}
+            <p className="mt-4 text-sm text-green-500 text-center">
+                Facing login problems? <span className="underline">Try enabling third-party cookies</span> in your browser.
+            </p>
         </div>
     );
 };
