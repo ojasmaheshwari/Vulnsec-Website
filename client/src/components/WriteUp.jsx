@@ -13,6 +13,8 @@ import { defaultProfilePic } from './Profile';
 import { LucideThumbsUp } from 'lucide-react';
 import { LucideThumbsDown } from 'lucide-react';
 
+import { ToastContainer, toast } from 'react-toastify';
+
 const WriteUp = () => {
     const { uuid } = useParams();
     const [loading, setLoading] = useState(true);
@@ -92,7 +94,12 @@ const WriteUp = () => {
             },
             credentials: 'include',
         })
-            .then(res => res.json())
+            .then(res => {
+                if (res.status === 401) {
+                    throw new Error(`Only logged-in and email verified users can ${type} a writeup.`);
+                }
+                return res.json()
+            })
             .then(data => {
                 if (type === 'like') {
                     likeButtonRef.current.classList.add('bg-blue-100');
@@ -104,7 +111,10 @@ const WriteUp = () => {
                 }
                 fetchReactions()
             })
-            .catch(err => console.error(`Failed to ${type}`, err));
+            .catch(err => {
+                toast.error(`${err}`);
+                console.error(`Failed to ${type}`, err)
+            });
     };
 
     if (loading) return <Loader />;
@@ -149,6 +159,19 @@ const WriteUp = () => {
             </div>
 
             <EditorContent editor={editor} />
+
+            <ToastContainer
+                position="bottom-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="light"
+            />
         </div>
     );
 };
