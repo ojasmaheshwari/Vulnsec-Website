@@ -14,6 +14,9 @@ import { LucideThumbsUp } from 'lucide-react';
 import { LucideThumbsDown } from 'lucide-react';
 
 import { ToastContainer, toast } from 'react-toastify';
+import NotFound from './NotFound';
+
+import { useNavigate } from 'react-router-dom';
 
 const WriteUp = () => {
     const { uuid } = useParams();
@@ -23,8 +26,12 @@ const WriteUp = () => {
 
     const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
 
+    const [found, setFound] = useState(false);
+
     const likeButtonRef = useRef(null);
     const dislikeButtonRef = useRef(null);
+
+    const navigate = useNavigate();
 
     const editor = useEditor({
         extensions: [StarterKit, Image, TaskItem, TaskList],
@@ -40,7 +47,11 @@ const WriteUp = () => {
             },
         })
             .then(res => {
-                if (res.status !== 200) {
+                if (res.status === 404) {
+                    setLoading(false);
+                    return; // Writeup not found
+                }
+                else if (res.status !== 200) {
                     alert("Something went wrong. Please try again later");
                     return;
                 }
@@ -60,6 +71,8 @@ const WriteUp = () => {
                     // likes: data.likes,
                     // dislikes: data.dislikes
                 });
+
+                setFound(true);
 
             })
             .catch(e => console.error(e))
@@ -118,6 +131,10 @@ const WriteUp = () => {
     };
 
     if (loading) return <Loader />;
+
+    if (!loading && !found) {
+        return <NotFound customMessage={"The write up does not exist"} />;
+    }
 
     return (
         <div className="max-w-3xl mx-auto py-12 px-4">
