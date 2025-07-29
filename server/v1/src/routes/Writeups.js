@@ -75,8 +75,8 @@ router.get('/:uuid', async (req, res) => {
     }
 })
 
-/*
-router.post('/:uuid/like', async (req, res) => {
+
+router.post('/:uuid/like', verifyToken, verifyEmail, async (req, res) => {
     try {
         const uuid = req.params.uuid;
 
@@ -88,21 +88,36 @@ router.post('/:uuid/like', async (req, res) => {
         if (results.length === 0) {
             res.status(404).send({ error: "Writeup not found" })
         }
+        const writeupId = results[0].id;
 
-        await db.execute('UPDATE writeups SET likes = likes + 1 WHERE uuid = ?', [uuid])
+        const userUuid = req.user.uuid;
+        const [userResults] = await db.execute('SELECT * FROM users WHERE uuid = ?', [userUuid])
+        if (userResults.length === 0) {
+            return res.status(404).json({ error: "User not found" })
+        }
 
-        const toSend = {
+        const userId = userResults[0].id;
+
+        // Check if entry already exists in reactions table
+        const [reactionResults] = await db.execute('SELECT * FROM writeup_reactions WHERE writeup_id = ? AND user_id = ?', [writeupId, userId])
+        if (reactionResults.length > 0) {
+            // If it exists, update the reaction
+            await db.execute('UPDATE writeup_reactions SET reaction = "like" WHERE writeup_id = ? AND user_id = ?', [writeupId, userId])
+        } else {
+            // If it does not exist, insert a new reaction
+            await db.execute('INSERT INTO writeup_reactions (writeup_id, user_id, reaction) VALUES (?, ?, "like")', [writeupId, userId])
+        }
+
+        res.status(200).json({
             message: "Liked successfully",
-        }
-
-        return res.status(200).json(toSend)
+        })
     } catch (e) {
         console.error(e);
         return res.status(500).json({ error: "Internal server error" })
     }
 })
 
-router.post('/:uuid/dislike', async (req, res) => {
+router.post('/:uuid/dislike', verifyToken, verifyEmail, async (req, res) => {
     try {
         const uuid = req.params.uuid;
 
@@ -114,20 +129,68 @@ router.post('/:uuid/dislike', async (req, res) => {
         if (results.length === 0) {
             res.status(404).send({ error: "Writeup not found" })
         }
+        const writeupId = results[0].id;
 
-        await db.execute('UPDATE writeups SET dislikes = dislikes + 1 WHERE uuid = ?', [uuid])
+        const userUuid = req.user.uuid;
 
-        const toSend = {
-            message: "Disliked successfully",
+        const [userResults] = await db.execute('SELECT * FROM users WHERE uuid = ?', [userUuid])
+        if (userResults.length === 0) {
+            return res.status(404).json({ error: "User not found" })
         }
 
-        return res.status(200).json(toSend)
+        const userId = userResults[0].id;
+
+        // Check if entry already exists in reactions table
+        const [reactionResults] = await db.execute('SELECT * FROM writeup_reactions WHERE writeup_id = ? AND user_id = ?', [writeupId, userId])
+        if (reactionResults.length > 0) {
+            // If it exists, update the reaction
+            await db.execute('UPDATE writeup_reactions SET reaction = "dislike" WHERE writeup_id = ? AND user_id = ?', [writeupId, userId])
+        } else {
+            // If it does not exist, insert a new reaction
+            await db.execute('INSERT INTO writeup_reactions (writeup_id, user_id, reaction) VALUES (?, ?, "dislike")', [writeupId, userId])
+        }
+
+        res.status(200).json({
+            message: "Disliked successfully",
+        })
     } catch (e) {
         console.error(e);
         return res.status(500).json({ error: "Internal server error" })
     }
 })
-*/
+
+router.get('/:uuid/reactions', async (req, res) => {
+    try {
+        const uuid = req.params.uuid;
+        if (!uuid) {
+            return res.status(400).json({ error: "uuid is required" })
+        }
+
+        const [results] = await db.execute('SELECT * FROM writeups WHERE uuid = ?', [uuid])
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Writeup not found" })
+        }
+
+        const writeupId = results[0].id;
+
+        const [reactions] = await db.execute('SELECT reaction, COUNT(*) as count FROM writeup_reactions WHERE writeup_id = ? GROUP BY reaction', [writeupId]);
+        const reactionCounts = reactions.reduce((acc, curr) => {
+            acc[curr.reaction] = curr.count;
+            return acc;
+        }, { LIKE: 0, DISLIKE: 0 });
+
+        res.status(200).json({
+            data: {
+                likes: reactionCounts.LIKE,
+                dislikes: reactionCounts.DISLIKE
+            },
+            message: "Reactions fetched successfully"
+        });
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Internal server error" })
+    }
+});
 
 router.post('/', verifyToken, verifyEmail, async (req, res) => {
     try {

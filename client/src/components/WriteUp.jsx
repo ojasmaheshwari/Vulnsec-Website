@@ -1,5 +1,5 @@
 import { SERVER_URL } from '/src/api_endpoints';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Loader from './Loader';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -10,11 +10,19 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 
 import { defaultProfilePic } from './Profile';
 
+import { LucideThumbsUp } from 'lucide-react';
+import { LucideThumbsDown } from 'lucide-react';
+
 const WriteUp = () => {
     const { uuid } = useParams();
     const [loading, setLoading] = useState(true);
     const [content, setContent] = useState(null);
     const [meta, setMeta] = useState({ title: '', description: '', posted_by: '', updated_at: '' });
+
+    const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
+
+    const likeButtonRef = useRef(null);
+    const dislikeButtonRef = useRef(null);
 
     const editor = useEditor({
         extensions: [StarterKit, Image, TaskItem, TaskList],
@@ -54,7 +62,27 @@ const WriteUp = () => {
             })
             .catch(e => console.error(e))
             .finally(() => setLoading(false));
+
+        // Fetch reactions
+        fetchReactions();
     }, []);
+
+    const fetchReactions = () => {
+        fetch(`${SERVER_URL}/writeups/${uuid}/reactions`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then(res => res.json())
+            .then(data => {
+                setReactions({
+                    likes: data.data.likes || 0,
+                    dislikes: data.data.dislikes || 0
+                });
+            })
+            .catch(err => console.error('Failed to fetch reactions:', err));
+    }
 
     const handleReaction = (type) => {
         fetch(`${SERVER_URL}/writeups/${uuid}/${type}`, {
@@ -62,10 +90,19 @@ const WriteUp = () => {
             headers: {
                 'Content-Type': 'application/json',
             },
+            credentials: 'include',
         })
             .then(res => res.json())
             .then(data => {
-                console.log(`${type} response:`, data);
+                if (type === 'like') {
+                    likeButtonRef.current.classList.add('bg-blue-100');
+                    dislikeButtonRef.current.classList.remove('bg-red-100');
+                }
+                else {
+                    dislikeButtonRef.current.classList.add('bg-red-100');
+                    likeButtonRef.current.classList.remove('bg-blue-100');
+                }
+                fetchReactions()
             })
             .catch(err => console.error(`Failed to ${type}`, err));
     };
@@ -92,20 +129,22 @@ const WriteUp = () => {
                     </span>
                 </div>
 
-                {/* <div className="mt-4 flex gap-3">
+                <div className="mt-4 flex gap-3">
                     <button
                         onClick={() => handleReaction('like')}
                         className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                        ref={likeButtonRef}
                     >
-                        {meta.likes} Like
+                        {reactions.likes} <LucideThumbsUp className="w-4 h-4" />
                     </button>
                     <button
                         onClick={() => handleReaction('dislike')}
                         className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                        ref={dislikeButtonRef}
                     >
-                        {meta.dislikes} Dislike
+                        {reactions.dislikes} <LucideThumbsDown className="w-4 h-4" />
                     </button>
-                </div> */}
+                </div>
 
             </div>
 
