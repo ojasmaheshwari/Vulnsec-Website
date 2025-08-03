@@ -16,6 +16,7 @@ import WriteUpEditor from './components/WriteUpEditor'
 import WriteUp from './components/WriteUp'
 import AllWriteUps from './components/AllWriteUps'
 import Users from './components/Users'
+import MyWriteUps from './components/MyWriteUps'
 
 function App() {
   const [user, setUser] = useState(null);
@@ -60,6 +61,7 @@ function App() {
                 <Route path='/writeups/:uuid' element={<WriteUp />}></Route>
                 <Route path='/writeups' element={<AllWriteUps />}></Route>
                 <Route path='/users/:username' element={<Users />}></Route>
+                <Route path='/my-writeups' element={<MyWriteUps />}></Route>
               </Routes>
             </div>
           </UserLoadingContext.Provider>

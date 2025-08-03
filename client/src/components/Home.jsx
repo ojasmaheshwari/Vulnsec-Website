@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import UserContext from '../contexts/userContext';
 import { LogIn, FileText, MessageSquare, PlusCircle } from 'lucide-react';
+import { FaDiscord } from 'react-icons/fa';
 
 const Home = () => {
     const { user } = useContext(UserContext);
@@ -77,6 +78,17 @@ const Home = () => {
                     <li className="flex items-center space-x-3">
                         <MessageSquare size={18} className="text-green-500" />
                         <Link to="/chat" className="hover:underline hover:text-green-300 transition-all">Chatrooms</Link>
+                    </li>
+                    <li className="flex items-center space-x-3">
+                        <FaDiscord size={18} className="text-green-500" />
+                        <a
+                            href="https://discord.gg/qMuRcasVzc"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:underline hover:text-green-300 transition-all"
+                        >
+                            Join our Discord
+                        </a>
                     </li>
                     {user && (user.roles.includes('ROLE_VULNSEC_MEMBER') || user.roles.includes('ROLE_ADMIN')) && (
                         <li className="flex items-center space-x-3">

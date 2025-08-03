@@ -28,7 +28,37 @@ router.get('/', async (req, res) => {
         })
 
     } catch (e) {
-        return res.status(500).json({ error: "Inernal server error" })
+        return res.status(500).json({ error: "Internal server error" })
+    }
+})
+
+router.get('/me', verifyToken, verifyEmail, async (req, res) => {
+    try {
+        const userUuid = req.user.uuid;
+
+        const [results] = await db.execute(`SELECT
+                W.uuid as writeUpUuid,
+                W.title,
+                W.description,
+                W.thumbnail_url,
+                W.created_at as writeUpCreationDate,
+                W.updated_at,
+                W.content,
+                U.uuid as authorUuid,
+                U.username as authorUsername
+            FROM writeups W
+            JOIN users U
+            ON W.author_id = U.id
+            WHERE U.uuid = ?`, [userUuid]);
+
+        res.status(200).json({
+            data: results,
+            message: "Success"
+        })
+
+    } catch (e) {
+        console.error(e);
+        return res.status(500).json({ error: "Internal server error" })
     }
 })
 
