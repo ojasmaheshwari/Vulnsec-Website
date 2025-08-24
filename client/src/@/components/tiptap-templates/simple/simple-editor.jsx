@@ -160,7 +160,7 @@ const MobileToolbarContent = ({
   </>
 )
 
-export function SimpleEditor() {
+export function SimpleEditor({ defaultContent, publishURL, title, description, thumbnail_url, action }) {
   const isMobile = useIsMobile()
   const windowSize = useWindowSize()
   const [mobileView, setMobileView] = React.useState("main")
@@ -170,9 +170,9 @@ export function SimpleEditor() {
   const { userLoading, setUserLoading } = React.useContext(UserLoadingContext)
 
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    thumbnail: "",
+    title: title || "",
+    description: description || "",
+    thumbnail: thumbnail_url || "",
   });
 
   const handleChange = (e) => {
@@ -185,8 +185,8 @@ export function SimpleEditor() {
 
   const handlePublish = async () => {
     formData['content'] = JSON.stringify(editor.getJSON());
-
-    const res = await fetch(`${SERVER_URL}/writeups`, {
+    const url = publishURL || `${SERVER_URL}/writeups`;
+    const res = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -194,12 +194,21 @@ export function SimpleEditor() {
       body: JSON.stringify(formData),
       credentials: 'include'
     })
-    const jsonData = await res.json()
 
-    if (res.status !== 200) {
-      alert(`Something went wrong. ${jsonData.error}`)
-    } else {
-      alert(`Blog posted. Share with URL ${CLIENT_URL}/writeups/${jsonData.data.uuid}`)
+    if (!action) {
+      const jsonData = await res.json()
+
+      if (res.status !== 200) {
+        alert(`Something went wrong. ${jsonData.error}`)
+      } else {
+        alert(`Writeup posted. Share with URL ${CLIENT_URL}/writeups/${jsonData.data.uuid}`)
+      }
+    } else if (action === "UPDATE") {
+      if (res.status === 200) {
+        alert('Writeup updated')
+      } else {
+        alert('Something went wrong, please contact admin')
+      }
     }
   };
 
@@ -241,7 +250,7 @@ export function SimpleEditor() {
         onError: (error) => console.error("Upload failed:", error),
       }),
     ],
-    content,
+    content: defaultContent || content,
   })
 
   const bodyRect = useCursorVisibility({

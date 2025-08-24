@@ -279,7 +279,67 @@ router.post('/', verifyToken, verifyEmail, async (req, res) => {
         console.error(e);
         return res.status(500).json({ error: "Internal server error" })
     }
+})
 
+router.post('/:uuid/edit', verifyToken, verifyEmail, async (req, res) => {
+    try {
+        // Check if the user owns the writeup
+        const uuid = req.params.uuid;
+        const [results] = await db.execute('SELECT U.uuid FROM writeups W JOIN users U on W.author_id = U.id AND W.uuid = ?', [uuid]);
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Writeup doesn't exist" });
+        }
+
+        const isOwner = (results[0].uuid === req.user.uuid);
+        if (!isOwner) {
+            return res.status(403).json({ error: "You are not allowed to edit this writeup" });
+        }
+
+        let { content, title, description, thumbnail } = req.body;
+
+        if (typeof title !== 'string' || typeof description !== 'string' || typeof thumbnail !== 'string' || typeof content !== 'string') {
+            return res.status(400).json({ error: "Bad fields. Title, description, content and thumbnail must be of type string" })
+        }
+
+        if (!validator.isURL(thumbnail, { protocols: ['http', 'https'], require_protocol: true })) {
+            return res.status(400).json({ error: "Thumbnail is not proper URL" })
+        }
+
+        title = validator.escape(title.trim())
+        description = validator.escape(description.trim())
+
+        const [result] = await db.execute("UPDATE writeups SET title = ?, description = ?, thumbnail_url = ?, updated_at = NOW(), content = ? WHERE uuid = ?", [
+            title, description, thumbnail, JSON.stringify(content), uuid
+        ]);
+
+        return res.status(200).json({ message: "Updated successfully" })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+})
+
+router.delete('/:uuid', verifyToken, verifyEmail, async (req, res) => {
+    try {
+        // Check if the user owns the writeup
+        const uuid = req.params.uuid;
+        const [results] = await db.execute('SELECT U.uuid FROM writeups W JOIN users U on W.author_id = U.id AND W.uuid = ?', [uuid]);
+        if (results.length === 0) {
+            return res.status(404).json({ error: "Writeup doesn't exist" });
+        }
+
+        const isOwner = (results[0].uuid === req.user.uuid);
+        if (!isOwner) {
+            return res.status(403).json({ error: "You are not allowed to delete this writeup" });
+        }
+
+        await db.execute('DELETE FROM writeups WHERE uuid = ?', [uuid]);
+
+        return res.status(200).json({ message: "Deleted successfully" })
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Internal server error' })
+    }
 })
 
 module.exports = router

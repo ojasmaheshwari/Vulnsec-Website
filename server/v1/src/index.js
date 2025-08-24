@@ -30,6 +30,7 @@ const checkRecoveryTokenRoute = require('./routes/checkRecoveryToken')
 const resetPasswordRoute = require('./routes/resetPassword')
 const writeupRoute = require('./routes/Writeups')
 const usersRoute = require('./routes/users')
+const isOwnerRoute = require('./routes/perms/isOwner')
 
 app.get('/', (req, res) => {
     res.send('Welcome to the API!');
@@ -45,6 +46,7 @@ app.use('/check-recovery-token', checkRecoveryTokenRoute)
 app.use('/reset-password', resetPasswordRoute)
 app.use('/writeups', writeupRoute)
 app.use('/users', usersRoute);
+app.use('/isOwner', isOwnerRoute)
 
 // Read SSL certificate files
 const options = {

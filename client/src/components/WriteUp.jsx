@@ -1,5 +1,5 @@
 import { SERVER_URL } from '/src/api_endpoints';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useContext } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Loader from './Loader';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -10,94 +10,52 @@ import { TaskItem, TaskList } from "@tiptap/extension-list";
 
 import { defaultProfilePic } from './Profile';
 
-import { LucideThumbsUp } from 'lucide-react';
+import { LucideThumbsUp, User } from 'lucide-react';
 import { LucideThumbsDown } from 'lucide-react';
+import { LucidePencil } from 'lucide-react';
+import { LucideTrash2 } from 'lucide-react';
 
 import { ToastContainer, toast } from 'react-toastify';
 import NotFound from './NotFound';
 
+import UserContext from '../contexts/userContext';
+import UserLoadingContext from '../contexts/userLoadingContext';
+
 import { useNavigate } from 'react-router-dom';
+import useWriteup from '../hooks/useWriteup';
+import useWriteupReactions from '../hooks/useWriteupReactions';
 
 const WriteUp = () => {
     const { uuid } = useParams();
-    const [loading, setLoading] = useState(true);
-    const [content, setContent] = useState(null);
-    const [meta, setMeta] = useState({ title: '', description: '', posted_by: '', updated_at: '' });
-
-    const [reactions, setReactions] = useState({ likes: 0, dislikes: 0 });
-
-    const [found, setFound] = useState(false);
+    // const [content, setContent] = useState(null);
+    // const [meta, setMeta] = useState({ title: '', description: '', posted_by: '', updated_at: '' });
+    const navigate = useNavigate();
+    const reactions = useWriteupReactions(uuid);
 
     const likeButtonRef = useRef(null);
     const dislikeButtonRef = useRef(null);
 
-    const navigate = useNavigate();
+    const [isOwner, setIsOwner] = useState(false);
+
+    const { user } = useContext(UserContext);
+    const { userLoading } = useContext(UserLoadingContext)
+
+    const writeup = useWriteup(uuid);
 
     const editor = useEditor({
         extensions: [StarterKit, Image, TaskItem, TaskList],
-        content,
+        content: writeup.content,
         editable: false
-    }, [content]);
+    }, [writeup.content]);
 
+    // When the both user and writeup has finished loading then check if he is owner of this writeup
     useEffect(() => {
-        fetch(`${SERVER_URL}/writeups/${uuid}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(res => {
-                if (res.status === 404) {
-                    setLoading(false);
-                    return; // Writeup not found
-                }
-                else if (res.status !== 200) {
-                    alert("Something went wrong. Please try again later");
-                    return;
-                }
-                return res.json();
-            })
-            .then(jsonResponse => {
-                const { data } = jsonResponse;
-                const jsonContent = JSON.parse(data.content);
-                setContent(JSON.parse(jsonContent));
+        if (userLoading || writeup.loading) return;
 
-                setMeta({
-                    title: data.title || 'Untitled',
-                    description: data.description || '',
-                    posted_by: data.authorUsername || 'Unknown',
-                    updated_at: new Date(data.updated_at).toLocaleString() || '',
-                    profile_pic: data.authorProfilePic || defaultProfilePic,
-                    // likes: data.likes,
-                    // dislikes: data.dislikes
-                });
+        if (!user) return; // User is not logged in
 
-                setFound(true);
-
-            })
-            .catch(e => console.error(e))
-            .finally(() => setLoading(false));
-
-        // Fetch reactions
-        fetchReactions();
-    }, []);
-
-    const fetchReactions = () => {
-        fetch(`${SERVER_URL}/writeups/${uuid}/reactions`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then(res => res.json())
-            .then(data => {
-                setReactions({
-                    likes: data.data.likes || 0,
-                    dislikes: data.data.dislikes || 0
-                });
-            })
-            .catch(err => console.error('Failed to fetch reactions:', err));
-    }
+        setIsOwner(user.username === writeup.meta.posted_by);
+    }, [userLoading, writeup.loading])
 
     const handleReaction = (type) => {
         fetch(`${SERVER_URL}/writeups/${uuid}/${type}`, {
@@ -122,7 +80,8 @@ const WriteUp = () => {
                     dislikeButtonRef.current.classList.add('bg-red-100');
                     likeButtonRef.current.classList.remove('bg-blue-100');
                 }
-                fetchReactions()
+
+                reactions.refresh();
             })
             .catch(err => {
                 toast.error(`${err}`);
@@ -130,11 +89,38 @@ const WriteUp = () => {
             });
     };
 
-    if (loading) return <Loader />;
+    const handleEdit = () => {
+        navigate('./edit');
+    }
 
-    if (!loading && !found) {
+    const handleDelete = () => {
+        const confirmation = confirm("Are you sure you want to delete this writeup?");
+        if (confirmation) {
+            fetch(`${SERVER_URL}/writeups/${uuid}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+            }).then(res => {
+                if (res.status === 200) {
+                    alert("Writeup Deleted");
+                } else {
+                    alert("Could not delete writeup. Please contact admin")
+                }
+            }).catch(err => {
+                console.error(err);
+            })
+        }
+    }
+
+    if (writeup.loading) return <Loader />;
+
+    if (!writeup.loading && !writeup.found) {
         return <NotFound customMessage={"The write up does not exist"} />;
     }
+
+    const { meta } = writeup;
 
     return (
         <div className="max-w-3xl mx-auto py-12 px-4">
@@ -156,21 +142,31 @@ const WriteUp = () => {
                     </span>
                 </div>
 
-                <div className="mt-4 flex gap-3">
-                    <button
-                        onClick={() => handleReaction('like')}
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
-                        ref={likeButtonRef}
-                    >
-                        {reactions.likes} <LucideThumbsUp className="w-4 h-4" />
-                    </button>
-                    <button
-                        onClick={() => handleReaction('dislike')}
-                        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
-                        ref={dislikeButtonRef}
-                    >
-                        {reactions.dislikes} <LucideThumbsDown className="w-4 h-4" />
-                    </button>
+                <div className="mt-4 flex justify-between">
+                    <div className='flex gap-3'>
+                        <button
+                            onClick={() => handleReaction('like')}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            ref={likeButtonRef}
+                        >
+                            {reactions.likes} <LucideThumbsUp className="w-4 h-4" />
+                        </button>
+                        <button
+                            onClick={() => handleReaction('dislike')}
+                            className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
+                            ref={dislikeButtonRef}
+                        >
+                            {reactions.dislikes} <LucideThumbsDown className="w-4 h-4" />
+                        </button>
+                    </div>
+                    {isOwner && (<div className="flex gap-3">
+                        <button className='flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition' onClick={handleEdit}>
+                            Edit <LucidePencil className='w-4 h-4' />
+                        </button>
+                        <button className='flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-red-100 transition' onClick={handleDelete}>
+                            Delete <LucideTrash2 className='w-4 h-4' />
+                        </button>
+                    </div>)}
                 </div>
 
             </div>
