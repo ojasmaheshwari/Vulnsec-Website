@@ -35,10 +35,10 @@ const WriteUp = () => {
     const likeButtonRef = useRef(null);
     const dislikeButtonRef = useRef(null);
 
-    const [isOwner, setIsOwner] = useState(false);
-
     const { user } = useContext(UserContext);
     const { userLoading } = useContext(UserLoadingContext)
+
+    const [isOwner, setIsOwner] = useState(false);
 
     const writeup = useWriteup(uuid);
 
@@ -122,6 +122,10 @@ const WriteUp = () => {
 
     const { meta } = writeup;
 
+    if (user) {
+        console.log(user.roles.includes('ROLE_ADMIN'))
+    }
+
     return (
         <div className="max-w-3xl mx-auto py-12 px-4">
             <div className="mb-6 border-b border-gray-700 pb-4">
@@ -159,7 +163,7 @@ const WriteUp = () => {
                             {reactions.dislikes} <LucideThumbsDown className="w-4 h-4" />
                         </button>
                     </div>
-                    {isOwner && (<div className="flex gap-3">
+                    {(isOwner || (user && user.roles.includes('ROLE_ADMIN'))) && (<div className="flex gap-3">
                         <button className='flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition' onClick={handleEdit}>
                             Edit <LucidePencil className='w-4 h-4' />
                         </button>

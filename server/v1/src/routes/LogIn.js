@@ -60,7 +60,7 @@ router.post('/', async (req, res) => {
             message: "Logged in",
         }
 
-        res.status(200).cookie('jwt', token, { sameSite: "None", secure:true, httpOnly: true, maxAge: 3600000 }).json(toSend)
+        res.status(200).cookie('jwt', token, { sameSite: "None", secure: true, httpOnly: true, maxAge: 3600000 }).json(toSend)
 
     } catch (e) {
         console.log(e);

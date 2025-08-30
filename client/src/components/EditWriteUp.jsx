@@ -8,11 +8,13 @@ import useWriteup from '../hooks/useWriteup';
 import { useEffect } from 'react';
 import { SimpleEditor } from '@/components/tiptap-templates/simple/simple-editor';
 import { SERVER_URL } from '../api_endpoints';
+import UserContext from '../contexts/userContext';
 
 const EditWriteUp = () => {
     const { uuid } = useParams()
     const { isOwner } = useWriteupOwner(uuid);
     const { userLoading } = useContext(UserLoadingContext)
+    const { user } = useContext(UserContext)
 
     const writeup = useWriteup(uuid);
 
@@ -24,7 +26,7 @@ const EditWriteUp = () => {
         return <Loader />;
     }
 
-    if (!isOwner) {
+    if (!isOwner && !(user && user.roles.includes('ROLE_ADMIN'))) {
         return <NotAuthorized customMessage={"You are not allowed to edit this writeup"} />;
     }
     return (

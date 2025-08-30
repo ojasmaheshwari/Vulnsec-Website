@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import { SERVER_URL } from '../api_endpoints';
 
+import { defaultProfilePic } from '../components/Profile';
+
 const useWriteup = (uuid) => {
     const [content, setContent] = useState(null);
     const [meta, setMeta] = useState({ title: '', description: '', posted_by: '', updated_at: '', thumbnail_url: '' });

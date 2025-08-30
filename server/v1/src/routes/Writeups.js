@@ -291,7 +291,14 @@ router.post('/:uuid/edit', verifyToken, verifyEmail, async (req, res) => {
         }
 
         const isOwner = (results[0].uuid === req.user.uuid);
-        if (!isOwner) {
+        let isAdmin = false;
+        if (req.user) {
+            if (req.user.roles.includes('ROLE_ADMIN')) {
+                isAdmin = true;
+            }
+        }
+
+        if (!isOwner && !isAdmin) {
             return res.status(403).json({ error: "You are not allowed to edit this writeup" });
         }
 
@@ -329,7 +336,13 @@ router.delete('/:uuid', verifyToken, verifyEmail, async (req, res) => {
         }
 
         const isOwner = (results[0].uuid === req.user.uuid);
-        if (!isOwner) {
+        let isAdmin = false;
+        if (req.user) {
+            if (req.user.roles.includes('ROLE_ADMIN')) {
+                isAdmin = true;
+            }
+        }
+        if (!isOwner && !isAdmin) {
             return res.status(403).json({ error: "You are not allowed to delete this writeup" });
         }
 
