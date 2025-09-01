@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaUserCircle, FaBars, FaTimes } from 'react-icons/fa';
+import { LuNotebook } from "react-icons/lu";
 import UserContext from '../contexts/userContext';
 
 const Navbar = () => {
@@ -37,10 +38,20 @@ const Navbar = () => {
                 {/* Desktop Nav */}
                 <ul className="hidden md:flex items-center gap-6 text-lg">
                     {user ? (
-                        <li className="flex items-center gap-2">
-                            <FaUserCircle className="text-2xl text-green-400" />
-                            <Link to='/profile' className="hover:underline">{user.username}</Link>
-                        </li>
+                        <>
+                            <li>
+                                <Link
+                                    to="/my-writeups"
+                                    className="px-4 py-2 rounded border border-green-400 hover:bg-green-500 hover:text-black transition duration-200"
+                                >
+                                    My WriteUps
+                                </Link>
+                            </li>
+                            <li className="flex items-center gap-2">
+                                <FaUserCircle className="text-2xl text-green-400" />
+                                <Link to='/profile' className="hover:underline">{user.username}</Link>
+                            </li>
+                        </>
                     ) : (
                         <>
                             <li>
@@ -94,6 +105,15 @@ const Navbar = () => {
                             </li>
                         </>
                     )}
+                    <li className='flex items-center gap-2'>
+                        <LuNotebook className="text-2xl text-green-400" />
+                        <Link
+                            to="/my-writeups"
+                            onClick={() => setMenuOpen(false)}
+                        >
+                            My WriteUps
+                        </Link>
+                    </li>
                 </ul>
             )}
         </div>
