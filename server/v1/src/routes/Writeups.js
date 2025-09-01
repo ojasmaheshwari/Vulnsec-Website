@@ -4,6 +4,8 @@ const validator = require('validator')
 const db = require('../db')
 const verifyToken = require('../middlewares/verifyToken')
 const verifyEmail = require('../middlewares/verifyEmail')
+const { getComments } = require('../controllers.js/comments.controller')
+const { postComment } = require('../controllers.js/comments.controller')
 
 router.get('/', async (req, res) => {
     try {
@@ -354,5 +356,8 @@ router.delete('/:uuid', verifyToken, verifyEmail, async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' })
     }
 })
+
+router.get('/:uuid/comments/', getComments);
+router.post('/:uuid/comments/', verifyToken, verifyEmail, postComment);
 
 module.exports = router

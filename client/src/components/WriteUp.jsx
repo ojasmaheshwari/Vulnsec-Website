@@ -24,6 +24,7 @@ import UserLoadingContext from '../contexts/userLoadingContext';
 import { useNavigate } from 'react-router-dom';
 import useWriteup from '../hooks/useWriteup';
 import useWriteupReactions from '../hooks/useWriteupReactions';
+import CommentSection from './CommentSection';
 
 const WriteUp = () => {
     const { uuid } = useParams();
@@ -176,6 +177,8 @@ const WriteUp = () => {
             </div>
 
             <EditorContent editor={editor} />
+
+            <CommentSection writeupUuid={uuid} />
 
             <ToastContainer
                 position="bottom-right"

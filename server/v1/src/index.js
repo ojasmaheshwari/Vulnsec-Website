@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors')
 const mysql = require('mysql2/promise');
 const cookieParser = require('cookie-parser')
+const connectDB = require('./config/db');
 const app = express();
 
 const port = 8080;
@@ -20,6 +21,8 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(cookieParser())
 
+connectDB();
+
 const signUpRoute = require('./routes/SignUp');
 const loginRoute = require('./routes/LogIn')
 const userRoute = require('./routes/user')
@@ -31,6 +34,7 @@ const resetPasswordRoute = require('./routes/resetPassword')
 const writeupRoute = require('./routes/Writeups')
 const usersRoute = require('./routes/users')
 const isOwnerRoute = require('./routes/perms/isOwner')
+const commentRoute = require('./routes/comments')
 
 app.get('/', (req, res) => {
     res.send('Welcome to the API!');
@@ -47,6 +51,7 @@ app.use('/reset-password', resetPasswordRoute)
 app.use('/writeups', writeupRoute)
 app.use('/users', usersRoute);
 app.use('/isOwner', isOwnerRoute)
+app.use('/comments', commentRoute);
 
 // Read SSL certificate files
 const options = {
