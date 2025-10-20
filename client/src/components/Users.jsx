@@ -70,7 +70,7 @@ const Users = () => {
                     <span className="text-green-300">About:</span> {data.about}
                 </div>
                 {
-                    data.roles.includes('ROLE_VULNSEC_MEMBER') && (
+                    data.roles.includes('VULNSEC_MEMBER') && (
                         <div className='my-4 mx-auto text-center'>
                             <span className="text-xl text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-yellow-400 to-pink-500 font-semibold">VulnSec Member</span>
                         </div>)
