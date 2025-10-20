@@ -1,6 +1,4 @@
 require('dotenv').config({ path: "../.env" })
-const https = require('https');
-const fs = require('fs');
 const express = require('express');
 const cors = require('cors')
 const mysql = require('mysql2/promise');
@@ -53,14 +51,7 @@ app.use('/users', usersRoute);
 app.use('/isOwner', isOwnerRoute)
 app.use('/comments', commentRoute);
 
-// Read SSL certificate files
-const options = {
-    key: fs.readFileSync('key.pem'),
-    cert: fs.readFileSync('cert.pem')
-};
-
 // Create HTTPS server
-https.createServer(options, app).listen(443, () => {
-    console.log('HTTPS Server running on port 443');
-});
-
+app.listen(port, () => {
+    console.log(`Server listening on port ${port}`)
+})
