@@ -1,34 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const CommentReactionModel = require('../models/commentReactions.model');
 const verifyToken = require('../middlewares/verifyToken');
 const verifyEmail = require('../middlewares/verifyEmail');
+const CommentModel = require('../models/comment.model');
+const { message } = require('../validators/login.validator');
 
 router.post('/:commentId/like', verifyToken, verifyEmail, async (req, res) => {
     const { commentId } = req.params;
     const userUuid = req.user.id;
 
     try {
-        const existingReaction = await CommentReactionModel.findOne({ commentId, userId: userUuid });
+        const comment = await CommentModel.findById(commentId);
 
-        if (existingReaction) {
-            if (existingReaction.reactionType === 'like') {
-                return res.status(400).json({ message: 'You have already liked this comment.' });
-            } else {
-                existingReaction.reactionType = 'like';
-                await existingReaction.save();
-                return res.status(200).json({ message: 'Changed reaction to like.' });
-            }
+        if (!comment) {
+            return res.status(404).json({ error : "Comment does not exist" });
+        }
+        if (comment.likes.includes(userUuid)) {
+            // User had already liked the comment before
+            return res.status(200).json({ message: "Already liked" })
         }
 
-        const newReaction = new CommentReactionModel({
-            commentId,
-            userId: userUuid,
-            reactionType: 'like',
-        });
+        comment.likes.push(userUuid);
 
-        await newReaction.save();
-        res.status(201).json({ message: 'Comment liked successfully.' });
+        await comment.save();
+
+        res.status(200).json({ message : "Comment liked successfully!" })
     } catch (error) {
         console.error('Error liking comment:', error);
         res.status(500).json({ message: 'Internal server error.' });
@@ -40,28 +36,23 @@ router.post('/:commentId/dislike', verifyToken, verifyEmail, async (req, res) =>
     const userUuid = req.user.id;
 
     try {
-        const existingReaction = await CommentReactionModel.findOne({ commentId, userId: userUuid });
+        const comment = await CommentModel.findById(commentId);
 
-        if (existingReaction) {
-            if (existingReaction.reactionType === 'dislike') {
-                return res.status(400).json({ message: 'You have already disliked this comment.' });
-            } else {
-                existingReaction.reactionType = 'dislike';
-                await existingReaction.save();
-                return res.status(200).json({ message: 'Changed reaction to dislike.' });
-            }
+        if (!comment) {
+            return res.status(404).json({ error : "Comment does not exist" });
+        }
+        if (comment.dislikes.includes(userUuid)) {
+            // User had already liked the comment before
+            return res.status(200).json({ message: "Already disliked" })
         }
 
-        const newReaction = new CommentReactionModel({
-            commentId,
-            userId: userUuid,
-            reactionType: 'dislike',
-        });
+        comment.dislikes.push(userUuid);
 
-        await newReaction.save();
-        res.status(201).json({ message: 'Comment disliked successfully.' });
+        await comment.save();
+
+        res.status(200).json({ message : "Comment disliked successfully!" })
     } catch (error) {
-        console.error('Error disliking comment:', error);
+        console.error('Error liking comment:', error);
         res.status(500).json({ message: 'Internal server error.' });
     }
 });

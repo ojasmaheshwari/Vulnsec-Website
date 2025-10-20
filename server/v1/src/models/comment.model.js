@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const { type } = require('../validators/login.validator');
+const { ref } = require('joi');
 
 const CommentSchema = new mongoose.Schema({
     writeupId: {
@@ -23,6 +25,14 @@ const CommentSchema = new mongoose.Schema({
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    likes : {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User'
+    },
+    dislikes : {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User'
     }
 });
 

@@ -1,6 +1,5 @@
 const CommentModel = require('../models/comment.model.js');
 const db = require('../db.js');
-const CommentReactionModel = require('../models/commentReactions.model.js');
 const UserModel = require('../models/user.model.js')
 
 console.log(CommentModel);

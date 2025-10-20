@@ -41,11 +41,11 @@ export function Comment({ comment, handleLike, handleDislike, handleReply, handl
                 <div className="flex items-center">
                     <button className="flex items-center text-sm text-gray-600 hover:text-gray-800" onClick={() => handleLike(comment._id)}>
                         <FaThumbsUp className="text-slate-700 mr-1" />
-                        <span className="mr-4">{comment.likes || 0}</span>
+                        <span className="mr-4">{comment.likes.length || 0}</span>
                     </button>
                     <button className="flex items-center text-sm text-gray-600 hover:text-gray-800" onClick={() => handleDislike(comment._id)}>
                         <FaThumbsDown className="text-slate-700 mr-1" />
-                        <span>{comment.dislikes || 0}</span>
+                        <span>{comment.dislikes.length || 0}</span>
                     </button>
                 </div>
                 <div>
