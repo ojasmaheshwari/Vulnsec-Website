@@ -6,7 +6,7 @@ const verifyEmail = require('../middlewares/verifyEmail');
 
 router.post('/:commentId/like', verifyToken, verifyEmail, async (req, res) => {
     const { commentId } = req.params;
-    const userUuid = req.user.uuid;
+    const userUuid = req.user.id;
 
     try {
         const existingReaction = await CommentReactionModel.findOne({ commentId, userId: userUuid });
@@ -37,7 +37,7 @@ router.post('/:commentId/like', verifyToken, verifyEmail, async (req, res) => {
 
 router.post('/:commentId/dislike', verifyToken, verifyEmail, async (req, res) => {
     const { commentId } = req.params;
-    const userUuid = req.user.uuid;
+    const userUuid = req.user.id;
 
     try {
         const existingReaction = await CommentReactionModel.findOne({ commentId, userId: userUuid });

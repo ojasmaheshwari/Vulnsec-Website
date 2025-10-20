@@ -2,13 +2,14 @@ const express = require('express')
 const router = express.Router()
 const db = require('../db')
 const bcrypt = require('bcrypt')
+const UserModel = require('../models/user.model')
 
 
 router.post('/', async (req, res) => {
     try {
         const { token, newPassword } = req.body;
 
-        if (typeof token !== 'string') {
+        if (!token || typeof token !== 'string') {
             return res.status(400).json({ error: "Token must be string" })
         }
 
@@ -16,16 +17,22 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: "Password must be between 8 and 20 characters." });
         }
 
-        const [results] = await db.execute('SELECT uuid FROM users WHERE passwordRecoveryToken = ? AND recoveryTokenExpireTime > NOW()',
-            [token]
+        const user = await UserModel.findOne(
+            { passwordRecoveryToken: token }
         )
-
-        if (results.length === 0) {
-            return res.status(400).json({ error: "Invalid or expired token" })
+        if (!user) {
+            return res.status(404).json({ error : "Invalid token"});
+        }
+        if (Date.now() > user.recoveryTokenExpireTime) {
+            return res.status(400).json({ error : "Token has been expired"});
         }
 
+        user.passwordRecoveryToken = "";
+
         const hashedPassword = await bcrypt.hash(newPassword, parseInt(process.env.SALT_ROUNDS));
-        await db.execute("UPDATE users SET passwordHash = ?, passwordRecoveryToken = NULL, recoveryTokenExpireTime = NULL WHERE passwordRecoveryToken = ?", [hashedPassword, token]);
+        user.passwordHash = hashedPassword;
+
+        await user.save();
 
         return res.status(200).json({ message: "Password reset successfully" })
 

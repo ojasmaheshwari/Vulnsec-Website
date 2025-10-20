@@ -1,6 +1,7 @@
 const CommentModel = require('../models/comment.model.js');
 const db = require('../db.js');
 const CommentReactionModel = require('../models/commentReactions.model.js');
+const UserModel = require('../models/user.model.js')
 
 console.log(CommentModel);
 
@@ -15,26 +16,9 @@ async function getComments(req, res) {
     }
 
     try {
-        const toSend = []
-        const comments = await CommentModel.find({writeupId: writeupUuid});
+        const comments = await CommentModel.find({writeupId: writeupUuid}).populate("authorId", "username profilePictureLink")
 
-        // Get user information for each comment from MySQL
-        
-        for (let i = 0; i < comments.length; i++) {
-            const [user] = await db.execute('SELECT username, profilePictureLink FROM users WHERE uuid = ?', [comments[i].authorId]);
-            const newObj = comments[i].toObject();
-
-            // Get reactions for the comment
-            const reactions = await CommentReactionModel.find({ commentId: comments[i]._id });
-            const likes = reactions.filter(r => r.reactionType === 'like').length;
-            const dislikes = reactions.filter(r => r.reactionType === 'dislike').length;
-            newObj['likes'] = likes;
-            newObj['dislikes'] = dislikes;
-
-            newObj['author'] = user[0] || { username: 'Unknown', profilePictureLink: '' };
-            toSend.push(newObj);
-        }
-        res.status(200).json(toSend);
+        res.status(200).json(comments);
     } catch (error) {
         console.error('Error fetching comments:', error);
         res.status(500).json({ error: 'Internal server error' });
@@ -51,7 +35,7 @@ async function postComment(req, res) {
         return res.status(400).json({ error: 'Invalid Writeup UUID' });
     }
 
-    const userUuid = req.user.uuid;
+    const userUuid = req.user.id;
 
     const { content } = req.body;
 

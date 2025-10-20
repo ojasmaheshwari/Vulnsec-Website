@@ -5,7 +5,7 @@ const verifyEmail = (req, res, next) => {
         return res.status(401).json({ error: "Unauthorized. User must be authorized before verifying email" });
     }
 
-    if (user.emailVerified === 1) {
+    if (user.emailVerified === true) {
         next();
     } else {
         console.log(user)

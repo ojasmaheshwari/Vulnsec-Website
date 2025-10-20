@@ -1,61 +1,48 @@
 const express = require('express')
 const jwt = require('jsonwebtoken')
 const router = express.Router()
-const db = require('../db')
+const UserModel = require('../models/user.model')
 const bcrypt = require('bcrypt')
+const validate = require('../middlewares/validate')
+const loginSchema = require('../validators/login.validator')
 
-router.post('/', async (req, res) => {
+router.post('/', validate(loginSchema), async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        const [result] = await db.execute('SELECT * from users where username = ?', [username]);
-        if (result.length === 0) {
-            console.log(result);
-            return res.status(400).json({ error: "Incorrect username or password" });
+        const user = await UserModel.findOne({username});
+        if (!user) {
+            return res.status(400).json({ error : "Incorrect username or password"});
         }
 
-        // Check if password is correct
-        const user = result[0];
         const passwordHash = user.passwordHash;
+
         const isMatch = await bcrypt.compare(password, passwordHash);
 
         if (!isMatch) {
-            console.log();
             return res.status(400).json({ error: "Incorrect username or password" });
-        }
-
-        // Get roles of user
-        const [rolesResult] = await db.execute(`SELECT * from users U
-                                                JOIN user_role UR
-                                                ON U.id = UR.user_id
-                                                JOIN roles R
-                                                ON UR.role_id = R.id
-                                                WHERE U.username = ?`, [username]);
-        const roles = [];
-        for (const role of rolesResult) {
-            roles.push(role.name);
         }
 
         // User is valid, serve JWT
         const jwtPayload = {
-            uuid: user.uuid,
+            id: user._id,
             email: user.email,
             username,
-            roles,
+            roles : user.roles,
             emailVerified: user.emailVerified
         }
         const token = jwt.sign(jwtPayload, process.env.JWT_SECRET, { expiresIn: 3600000 })
 
         const toSend = {
             user: {
+                id: user._id,
                 username: user.username,
                 email: user.email,
-                uuid: user.uuid,
                 emailVerified: user.emailVerified,
                 fullName: user.fullName,
                 about: user.about,
                 profilePictureLink: user.profilePictureLink,
-                roles
+                roles: user.roles
             },
             message: "Logged in",
         }

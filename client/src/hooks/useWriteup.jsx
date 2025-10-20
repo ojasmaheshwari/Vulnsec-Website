@@ -34,15 +34,15 @@ const useWriteup = (uuid) => {
             .then(jsonResponse => {
                 const { data } = jsonResponse;
                 const jsonContent = JSON.parse(data.content);
-                setContent(JSON.parse(jsonContent));
+                setContent(jsonContent);
 
                 setMeta({
                     title: data.title || 'Untitled',
                     description: data.description || '',
-                    posted_by: data.authorUsername || 'Unknown',
-                    updated_at: new Date(data.updated_at).toLocaleString() || '',
+                    posted_by: data.authorId.username || 'Unknown',
+                    updatedAt: new Date(data.updatedAt).toLocaleString() || '',
                     profile_pic: data.authorProfilePic || defaultProfilePic,
-                    thumbnail_url: data.thumbnail
+                    thumbnail_url: data.thumbnail_url
                 });
 
                 setFound(true)

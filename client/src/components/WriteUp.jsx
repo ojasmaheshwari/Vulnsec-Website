@@ -143,7 +143,7 @@ const WriteUp = () => {
                         Posted by <span className="font-semibold text-slate-700 hover:underline">
                             <Link to={`/users/${meta.posted_by}`}>{meta.posted_by}</Link>
                         </span> •{' '}
-                        <span className="text-gray-500">{meta.updated_at}</span>
+                        <span className="text-gray-500">{meta.updatedAt}</span>
                     </span>
                 </div>
 

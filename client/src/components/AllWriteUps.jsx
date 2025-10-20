@@ -44,7 +44,7 @@ const AllWriteUps = () => {
                 {writeUps.map((w, idx) => (
                     <div
                         key={idx}
-                        onClick={() => navigate(`./${w.writeUpUuid}`)}
+                        onClick={() => navigate(`./${w._id}`)}
                         className="bg-gray-900 border border-green-500/40 rounded-lg overflow-hidden cursor-pointer transform hover:scale-[1.03] transition-all duration-300 hover:shadow-neon"
                     >
                         <img
@@ -58,7 +58,7 @@ const AllWriteUps = () => {
                                 {w.description}
                             </p>
                             <div className="text-xs text-green-600">
-                                By <span className="text-green-400">{w.authorUsername}</span> · {formatDate(w.updated_at)}
+                                By <span className="text-green-400">{w.authorId.username}</span> · {formatDate(w.updatedAt)}
                             </div>
                         </div>
                     </div>

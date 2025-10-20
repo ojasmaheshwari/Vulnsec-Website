@@ -3,28 +3,33 @@ const router = express.Router();
 const verifyToken = require('../middlewares/verifyToken')
 const nodemailer = require('nodemailer')
 const crypto = require('crypto');
-const db = require('../db')
+const UserModel = require('../models/user.model')
 
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    secure: true,
-    auth: {
-        user: process.env.MAIL_ADDRESS,
-        pass: process.env.MAIL_PASSWORD
-    }
+  service: 'gmail',
+  secure: true,
+  auth: {
+    user: process.env.MAIL_ADDRESS,
+    pass: process.env.MAIL_PASSWORD
+  }
 });
 
 router.post('/', verifyToken, async (req, res) => {
+  try {
     const { user } = req;
 
     // check if email is already verified or not
     if (user.emailVerified) {
-        return res.status(200).json({ "message": "Email is already verified" })
+      return res.status(200).json({ "message": "Email is already verified" })
     }
 
     // Generate a token
     const token = crypto.randomBytes(32).toString('hex');
-    const [results] = await db.execute('UPDATE users SET emailVerificationToken = ? WHERE uuid = ?', [token, user.uuid]);
+    await UserModel.findOneAndUpdate(
+      { _id: user.id },
+      { $set: { emailVerificationToken: token } }
+    )
+
     const url = `${process.env.SERVER_URL}/verify-token-email?token=${token}`;
 
     const htmlContent = `<!DOCTYPE html>
@@ -101,22 +106,24 @@ router.post('/', verifyToken, async (req, res) => {
 `
 
     const mailOptions = {
-        from: `"VulnSec" <${process.env.MAIL_ADDRESS}>`,
-        to: user.email,
-        subject: 'Verify your account',
-        html: htmlContent
+      from: `"VulnSec" <${process.env.MAIL_ADDRESS}>`,
+      to: user.email,
+      subject: 'Verify your account',
+      html: htmlContent
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
-        if (error) {
-            console.error('Error sending email:', error);
+      if (error) {
+        console.error('Error sending email:', error);
 
-            return res.status(500).json({ "error": "Internal server error" });
-        }
+        return res.status(500).json({ "error": "Internal server error" });
+      }
 
-        return res.status(200).json({ "message": "Sent successfully!" })
+      return res.status(200).json({ "message": "Sent successfully!" })
     });
-
+  } catch (e) {
+    return res.status(500).json({ error: "Internal server error" });
+  }
 })
 
 module.exports = router;

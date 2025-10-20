@@ -12,13 +12,16 @@ const useWriteupOwner = (uuid) => {
     useEffect(() => {
         if (!loggedIn) { setIsOwner(false); return; };
 
-        fetch(`${SERVER_URL}/isOwner?writeupUuid=${uuid}&ownerUuid=${user.uuid}`)
+        fetch(`${SERVER_URL}/writeups/${uuid}`)
             .then(res => {
                 if (res.status === 200) {
-                    setIsOwner(true);
+                    return res.json();
                 } else {
                     setIsOwner(false);
                 }
+            })
+            .then(res => {
+                setIsOwner(res.data.authorId._id === user.id);
             })
             .catch(err => {
                 console.error(err);

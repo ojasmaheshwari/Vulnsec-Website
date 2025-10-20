@@ -7,15 +7,16 @@ import { FaThumbsUp, FaThumbsDown, FaReply } from "react-icons/fa";
 import { defaultProfilePic } from "./Profile";
 
 export function Comment({ comment, handleLike, handleDislike, handleReply, handleReplySubmit, type }) {
+    console.log(comment)
     return (
         <li key={comment._id} className="mb-4" id={type === "reply" ? `reply-${comment._id}` : `comment-${comment._id}`}>
             <div className="flex items-center mb-1">
                 <img
-                    src={comment.author.profilePictureLink || defaultProfilePic}
-                    alt={`${comment.author.username}'s profile`}
+                    src={comment.authorId.profilePictureLink || defaultProfilePic}
+                    alt={`${comment.authorId.username}'s profile`}
                     className="w-8 h-8 rounded-full object-cover border border-gray-300"
                 />
-                <Link to={`/users/${comment.author.username}`} className="ml-2 font-medium hover:underline">{comment.author.username}</Link>
+                <Link to={`/users/${comment.authorId.username}`} className="ml-2 font-medium hover:underline">{comment.authorId.username}</Link>
                 <span className="ml-2 text-sm text-gray-500">{new Date(comment.createdAt).toLocaleString()}</span>
             </div>
             {/* If the content contains @username, make it a link to user's profile */}
@@ -55,7 +56,7 @@ export function Comment({ comment, handleLike, handleDislike, handleReply, handl
                 </div>
             </div>
             <div className="mt-2 mb-2 p-4 shadow-md rounded-lg hidden" id={`reply-box-${comment._id}`}>
-                <h3>Replying to <b>@{comment.author.username}</b></h3>
+                <h3>Replying to <b>@{comment.authorId.username}</b></h3>
 
                 <textarea
                     placeholder="Write your reply..."

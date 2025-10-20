@@ -198,10 +198,10 @@ export function SimpleEditor({ defaultContent, publishURL, title, description, t
     if (!action) {
       const jsonData = await res.json()
 
-      if (res.status !== 200) {
+      if (res.status !== 201) {
         alert(`Something went wrong. ${jsonData.error}`)
       } else {
-        alert(`Writeup posted. Share with URL ${CLIENT_URL}/writeups/${jsonData.data.uuid}`)
+        alert(`Writeup posted. Share with URL ${CLIENT_URL}/writeups/${jsonData.data._id}`)
       }
     } else if (action === "UPDATE") {
       if (res.status === 200) {
@@ -268,7 +268,7 @@ export function SimpleEditor({ defaultContent, publishURL, title, description, t
     return <Loader />
   }
 
-  if (user && !(user.roles.includes('ROLE_VULNSEC_MEMBER') || user.roles.includes('ROLE_ADMIN'))) {
+  if (user && !(user.roles.includes('VULNSEC_MEMBER') || user.roles.includes('ADMIN'))) {
     return <h1>Only VulnSec members are allowed to create writeups at the moment</h1>
   }
 

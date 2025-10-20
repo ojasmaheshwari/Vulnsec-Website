@@ -1,31 +1,34 @@
 const express = require('express')
 const router = express.Router()
 const verifyToken = require('../middlewares/verifyToken')
-const db = require('../db')
+const UserModel = require('../models/user.model')
 const validator = require('validator')
+const { error } = require('../validators/login.validator')
 
 router.get('/', verifyToken, async (req, res) => {
-    const [result] = await db.execute('SELECT * FROM users WHERE uuid = ?', [req.user.uuid])
-    if (result.length === 0) {
-        return res.status(401).json({ error: "User doesn't exist" })
-    }
-
-    const user = result[0];
-
-    const toSend = {
-        user: {
-            username: user.username,
-            email: user.email,
-            uuid: user.uuid,
-            emailVerified: user.emailVerified,
-            fullName: user.fullName,
-            about: user.about,
-            profilePictureLink: user.profilePictureLink,
-            roles: req.user.roles
+    try {
+        const user = await UserModel.findById(req.user.id);
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
-    }
 
-    return res.status(200).json(toSend);
+        const toSend = {
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                emailVerified: user.emailVerified,
+                fullName: user.fullName,
+                about: user.about,
+                profilePictureLink: user.profilePictureLink,
+                roles: user.roles
+            }
+        }
+
+        return res.status(200).json(toSend);
+    } catch (e) {
+        res.status(500).json({ error: "Internal server error" })
+    }
 })
 
 router.patch('/', verifyToken, async (req, res) => {
@@ -44,22 +47,22 @@ router.patch('/', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'Invalid profile picture URL' });
         }
 
-        const [result] = await db.execute('UPDATE users SET fullName = ?, about = ?, profilePictureLink = ? WHERE uuid = ?',
-            [fullName, about, profilePictureLink, req.user.uuid]
+        const user = await UserModel.findOneAndUpdate(
+            { _id: req.user.id },
+            {
+                $set: {
+                    fullName,
+                    about,
+                    profilePictureLink
+                }
+            },
+            { new: true }
         )
-
-        const [updatedResult] = await db.execute('SELECT * FROM users WHERE uuid = ?', [req.user.uuid]);
-        if (updatedResult.length === 0) {
-            return res.status(404).json({ error: "User not found after update" });
-        }
-
-        const user = updatedResult[0];
-
         const toSend = {
             user: {
+                id: user.id,
                 username: user.username,
                 email: user.email,
-                uuid: user.uuid,
                 emailVerified: user.emailVerified,
                 fullName: user.fullName,
                 about: user.about,

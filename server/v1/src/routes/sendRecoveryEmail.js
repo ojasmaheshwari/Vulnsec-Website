@@ -4,6 +4,7 @@ const validator = require('validator')
 const nodemailer = require('nodemailer')
 const db = require('../db')
 const crypto = require('crypto')
+const UserModel = require('../models/user.model')
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -22,16 +23,19 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: "Invalid email" })
         }
 
-        const [results] = await db.execute('SELECT username FROM users WHERE email = ?', [email]);
-        if (results.length === 0) {
-            return res.status(404).json({ error: "No account with email found" })
+        const user = await UserModel.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
         }
-        const username = results[0].username;
 
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 3600000); // 1 hour
 
-        await db.execute("UPDATE users SET passwordRecoveryToken = ?, recoveryTokenExpireTime = ? WHERE email = ?", [token, expires, email]);
+        await UserModel.findOneAndUpdate(
+            { _id: user._id },
+            { $set: { passwordRecoveryToken: token, recoveryTokenExpireTime: expires } }
+        )
 
         const resetLink = `${process.env.FRONTEND_URL}/password-reset?token=${token}`;
 
@@ -80,7 +84,7 @@ router.post('/', async (req, res) => {
 <body>
     <div class="container">
         <h2>Password Reset Request</h2>
-        <p>Hello ${username},</p>
+        <p>Hello ${user.username},</p>
         <p>We received a request to reset your password. Click the button below to choose a new password:</p>
         <p>
             <a href="${resetLink}" class="button">Reset Your Password</a>

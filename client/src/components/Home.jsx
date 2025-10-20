@@ -90,7 +90,7 @@ const Home = () => {
                             Join our Discord
                         </a>
                     </li>
-                    {user && (user.roles.includes('ROLE_VULNSEC_MEMBER') || user.roles.includes('ROLE_ADMIN')) && (
+                    {user && (user.roles.includes('VULNSEC_MEMBER') || user.roles.includes('ADMIN')) && (
                         <li className="flex items-center space-x-3">
                             <PlusCircle size={18} className="text-green-500" />
                             <Link to="/create-writeup" className="hover:underline hover:text-green-300 transition-all">Create Writeups</Link>
