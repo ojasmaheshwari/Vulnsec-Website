@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db')
+const UserModel = require('../models/user.model')
 
 router.get('/:username', async (req, res) => {
     const { username } = req.params;
@@ -10,31 +11,15 @@ router.get('/:username', async (req, res) => {
     }
 
     try {
-        const [result] = await db.execute('SELECT * FROM users WHERE username = ?', [username]);
-        if (result.length === 0) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        const [rolesResult] = await db.execute(`SELECT * from users U
-                                                JOIN user_role UR
-                                                ON U.id = UR.user_id
-                                                JOIN roles R
-                                                ON UR.role_id = R.id
-                                                WHERE U.username = ?`, [username]);
-        const roles = [];
-        for (const role of rolesResult) {
-            roles.push(role.name);
-        }
-
-        const user = result[0];
+        const user = await UserModel.findOne({username})
         const toSend = {
             user: {
                 username: user.username,
-                uuid: user.uuid,
+                uuid: user._id,
                 fullName: user.fullName,
                 about: user.about,
                 profilePictureLink: user.profilePictureLink,
-                roles
+                roles: user.roles
             }
         };
 
