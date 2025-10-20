@@ -1,44 +1,40 @@
-const express = require('express')
-const router = express.Router()
-const validator = require('validator')
-const nodemailer = require('nodemailer')
-const db = require('../db')
-const crypto = require('crypto')
-const UserModel = require('../models/user.model')
+const express = require('express');
+const router = express.Router();
+const validator = require('validator');
+const crypto = require('crypto');
+const UserModel = require('../models/user.model');
+const db = require('../db');
+const sgMail = require('@sendgrid/mail');
 
-const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    secure: true,
-    auth: {
-        user: process.env.MAIL_ADDRESS,
-        pass: process.env.MAIL_PASSWORD
-    }
-});
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 router.post('/', async (req, res) => {
     try {
         const { email } = req.body;
 
+        // Validate email
         if (typeof email !== "string" || !validator.isEmail(email)) {
-            return res.status(400).json({ error: "Invalid email" })
+            return res.status(400).json({ error: "Invalid email" });
         }
 
         const user = await UserModel.findOne({ email });
-
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
 
+        // Generate token and expiry
         const token = crypto.randomBytes(32).toString('hex');
         const expires = new Date(Date.now() + 3600000); // 1 hour
 
         await UserModel.findOneAndUpdate(
             { _id: user._id },
             { $set: { passwordRecoveryToken: token, recoveryTokenExpireTime: expires } }
-        )
+        );
 
         const resetLink = `${process.env.FRONTEND_URL}/password-reset?token=${token}`;
 
+        // HTML email template
         const htmlContent = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -95,29 +91,27 @@ router.post('/', async (req, res) => {
         </div>
     </div>
 </body>
-</html>
-`
-        const mailOptions = {
-            from: `"VulnSec" <${process.env.MAIL_ADDRESS}>`,
+</html>`;
+
+        // SendGrid email data
+        const msg = {
             to: email,
+            from: {
+                email: process.env.MAIL_ADDRESS,
+                name: 'VulnSec'
+            },
             subject: 'Reset Password',
             html: htmlContent
         };
 
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
+        await sgMail.send(msg);
 
-                return res.status(500).json({ "error": "Internal server error" });
-            }
+        return res.status(200).json({ message: "Sent successfully!" });
 
-            return res.status(200).json({ "message": "Sent successfully!" })
-        });
-
-    } catch (e) {
-        console.error(e);
+    } catch (error) {
+        console.error('Error sending email:', error);
         return res.status(500).json({ error: "Internal server error" });
     }
-})
+});
 
 module.exports = router;
