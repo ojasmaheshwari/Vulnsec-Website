@@ -1,37 +1,32 @@
-const express = require('express')
+const express = require('express');
 const router = express.Router();
-const verifyToken = require('../middlewares/verifyToken')
-const nodemailer = require('nodemailer')
+const verifyToken = require('../middlewares/verifyToken');
 const crypto = require('crypto');
-const UserModel = require('../models/user.model')
+const UserModel = require('../models/user.model');
+const sgMail = require('@sendgrid/mail');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  secure: true,
-  auth: {
-    user: process.env.MAIL_ADDRESS,
-    pass: process.env.MAIL_PASSWORD
-  }
-});
+// Initialize SendGrid
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 router.post('/', verifyToken, async (req, res) => {
   try {
     const { user } = req;
 
-    // check if email is already verified or not
+    // Check if email already verified
     if (user.emailVerified) {
-      return res.status(200).json({ "message": "Email is already verified" })
+      return res.status(200).json({ message: "Email is already verified" });
     }
 
-    // Generate a token
+    // Generate a verification token
     const token = crypto.randomBytes(32).toString('hex');
     await UserModel.findOneAndUpdate(
       { _id: user.id },
       { $set: { emailVerificationToken: token } }
-    )
+    );
 
     const url = `${process.env.SERVER_URL}/verify-token-email?token=${token}`;
 
+    // Email HTML content
     const htmlContent = `<!DOCTYPE html>
 <html lang="en" style="margin: 0; padding: 0;">
   <head>
@@ -102,28 +97,27 @@ router.post('/', verifyToken, async (req, res) => {
       </div>
     </div>
   </body>
-</html>
-`
+</html>`;
 
-    const mailOptions = {
-      from: `"VulnSec" <${process.env.MAIL_ADDRESS}>`,
+    // SendGrid message configuration
+    const msg = {
       to: user.email,
+      from: {
+        email: process.env.MAIL_ADDRESS,
+        name: 'VulnSec'
+      },
       subject: 'Verify your account',
       html: htmlContent
     };
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error('Error sending email:', error);
+    await sgMail.send(msg);
 
-        return res.status(500).json({ "error": "Internal server error" });
-      }
+    return res.status(200).json({ message: "Sent successfully!" });
 
-      return res.status(200).json({ "message": "Sent successfully!" })
-    });
-  } catch (e) {
+  } catch (error) {
+    console.error('Error sending email:', error);
     return res.status(500).json({ error: "Internal server error" });
   }
-})
+});
 
 module.exports = router;
