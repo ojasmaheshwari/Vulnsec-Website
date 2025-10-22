@@ -20,7 +20,7 @@ router.get('/', async (req, res) => {
             return res.status(400).send("<html><body><h1>Invalid or Expired token, please try again.</h1></body></html>");
         }
 
-        res.status(200).send('<html><body><h1>Email Verified!</h1></body></html>');
+        res.status(200).send('<html><body><h1>Email Verified! Please <a href="https://vulnsec.netlify.app/login">login</a> again!</h1></body></html>');
     } catch (e) {
         console.error(e);
         return res.status(500).send("<html><body><h1>Missing/Invalid/Expired token, please try again.</h1></body></html>")
