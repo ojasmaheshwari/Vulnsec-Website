@@ -89,5 +89,12 @@ Password: CsZy^V2=pmhq#'Q
 
 Built by @ojasmaheshwari
 
+# Deployment
+
+Deployed at https://vulnsec.netlify.app<br>
+Frontend: Netlify<br>
+Backend API: Render<br>
+Database: MongoDB Cloud
+
 <img width="1920" height="926" alt="image" src="https://github.com/user-attachments/assets/0b12f4ff-4906-49d0-aac5-689c5427b46c" />
 <img width="1920" height="929" alt="image" src="https://github.com/user-attachments/assets/3c79f352-b550-4316-8911-1ad514082470" />
