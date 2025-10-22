@@ -41,7 +41,7 @@ const useWriteup = (uuid) => {
                     description: data.description || '',
                     posted_by: data.authorId.username || 'Unknown',
                     updatedAt: new Date(data.updatedAt).toLocaleString() || '',
-                    profile_pic: data.profilePictureLink || defaultProfilePic,
+                    profile_pic: data.authorId.profilePictureLink || defaultProfilePic,
                     thumbnail_url: data.thumbnail_url
                 });
 

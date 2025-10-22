@@ -49,7 +49,7 @@ router.get('/:uuid', async (req, res) => {
             return res.status(400).json({ error: "uuid is required" })
         }
 
-        const writeUp = await WriteupModel.findById(uuid).populate("authorId", "username")
+        const writeUp = await WriteupModel.findById(uuid).populate("authorId", "username profilePictureLink")
 
         return res.status(200).json({
             message: "success",
