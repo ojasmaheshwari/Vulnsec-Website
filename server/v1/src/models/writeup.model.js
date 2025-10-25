@@ -1,3 +1,4 @@
+const { ref } = require('joi');
 const mongoose = require('mongoose')
 
 const WriteupSchema = mongoose.Schema({
@@ -24,6 +25,14 @@ const WriteupSchema = mongoose.Schema({
     },
     content_text : {
         type: String
+    },
+    likes: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User'
+    },
+    dislikes: {
+        type: [mongoose.Schema.Types.ObjectId],
+        ref: 'User'
     }
 }, {timestamps : true})
 

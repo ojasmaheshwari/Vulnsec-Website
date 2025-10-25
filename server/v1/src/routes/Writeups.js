@@ -8,7 +8,6 @@ const { getComments } = require('../controllers.js/comments.controller')
 const { postComment } = require('../controllers.js/comments.controller')
 const WriteupModel = require('../models/writeup.model')
 const UserModel = require('../models/user.model')
-const ReactionModel = require('../models/reaction.model')
 
 router.get('/', async (req, res) => {
     try {
@@ -70,13 +69,19 @@ router.post('/:uuid/like', verifyToken, verifyEmail, async (req, res) => {
             return res.status(400).json({ error: "uuid is required" })
         }
 
-        await ReactionModel.updateOne(
-            { userId: req.user.id, writeupId: uuid },
-            { $set: { reaction: "like" } },
-            { upsert: true }
-        )
+        const writeup = await WriteupModel.findById(uuid);
+        
+        if (!writeup) {
+            return res.status(404).json({ error: "Writeup does not exist" });
+        }
 
-        const reactions = await ReactionModel.find({ writeupId: uuid })
+        if (writeup.likes.includes(req.user.id)) {
+            return res.status(200).json({ message: "Already liked" })
+        }
+
+        writeup.likes.push(req.user.id);
+
+        await writeup.save();
 
         return res.status(200).json({
             message: "success",
@@ -95,13 +100,19 @@ router.post('/:uuid/dislike', verifyToken, verifyEmail, async (req, res) => {
             return res.status(400).json({ error: "uuid is required" })
         }
 
-        await ReactionModel.updateOne(
-            { userId: req.user.id, writeupId: uuid },
-            { $set: { reaction: "dislike" } },
-            { upsert: true }
-        )
+        const writeup = await WriteupModel.findById(uuid);
 
-        const reactions = await ReactionModel.find({ writeupId: uuid })
+        if (!writeup) {
+            return res.status(404).json({ error: "Writeup does not exist" });
+        }
+
+        if (writeup.dislikes.includes(req.user.id)) {
+            return res.status(200).json({ message: "Already disliked" })
+        }
+        
+        writeup.dislikes.push(req.user.id);
+
+        await writeup.save();
 
         return res.status(200).json({
             message: "success",
@@ -111,30 +122,6 @@ router.post('/:uuid/dislike', verifyToken, verifyEmail, async (req, res) => {
         return res.status(500).json({ error: "Internal server error" })
     }
 })
-
-router.get('/:uuid/reactions', async (req, res) => {
-    try {
-        const uuid = req.params.uuid;
-        if (!uuid) {
-            return res.status(400).json({ error: "uuid is required" })
-        }
-
-        const reactions = await ReactionModel.find({ writeupId: uuid });
-        const likes = reactions.reduce((a, r) => (r.reaction === "like") ? a + 1 : a, 0)
-        const dislikes = reactions.reduce((a, r) => (r.reaction === "dislike") ? a + 1 : a, 0)
-
-        return res.status(200).json({
-            message: "success",
-            data: {
-                likes,
-                dislikes
-            }
-        })
-    } catch (e) {
-        console.error(e);
-        return res.status(500).json({ error: "Internal server error" })
-    }
-});
 
 router.post('/', verifyToken, verifyEmail, async (req, res) => {
     try {
