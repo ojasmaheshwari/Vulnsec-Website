@@ -153,14 +153,14 @@ const WriteUp = () => {
                             className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             ref={likeButtonRef}
                         >
-                            {writeup.likes.length} <LucideThumbsUp className="w-4 h-4" />
+                            {writeup.likes ? writeup.likes.length : 0} <LucideThumbsUp className="w-4 h-4" />
                         </button>
                         <button
                             onClick={() => handleReaction('dislike')}
                             className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 border border-gray-300 rounded-md hover:bg-gray-100 transition"
                             ref={dislikeButtonRef}
                         >
-                            {writeup.dislikes.length} <LucideThumbsDown className="w-4 h-4" />
+                            {writeup.dislikes ? writeup.dislikes.length : 0} <LucideThumbsDown className="w-4 h-4" />
                         </button>
                     </div>
                     {(isOwner || (user && user.roles.includes('ROLE_ADMIN'))) && (<div className="flex gap-3">
