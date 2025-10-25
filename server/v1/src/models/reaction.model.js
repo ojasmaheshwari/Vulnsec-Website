@@ -18,7 +18,16 @@ const ReactionSchema = mongoose.Schema({
     }
 })
 
-ReactionSchema.index({ userId : 1, writeupId : 1}, { unique: true })
+ReactionSchema.index(
+  { userId: 1, writeupId: 1 },
+  { 
+    unique: true,
+    partialFilterExpression: { 
+      userId: { $exists: true, $ne: null },
+      writeupId: { $exists: true, $ne: null }
+    }
+  }
+);
 
 const ReactionModel = mongoose.model("Reaction", ReactionSchema);
 
