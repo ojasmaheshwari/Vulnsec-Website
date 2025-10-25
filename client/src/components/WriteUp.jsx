@@ -120,6 +120,8 @@ const WriteUp = () => {
 
     const { meta } = writeup;
 
+    console.log("writeup", writeup);
+
     if (user) {
         console.log(user.roles.includes('ROLE_ADMIN'))
     }
