@@ -168,6 +168,14 @@ router.post('/', verifyToken, verifyEmail, async (req, res) => {
             content
         })
 
+        console.log({
+            title,
+            description,
+            authorId: req.user.id,
+            thumbnail_url: thumbnail,
+            content
+        })
+
         return res.status(201).json({ message: "Success", data: writeup });
 
     } catch (e) {
