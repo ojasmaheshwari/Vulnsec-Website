@@ -42,7 +42,9 @@ const useWriteup = (uuid) => {
                     posted_by: data.authorId.username || 'Unknown',
                     updatedAt: new Date(data.updatedAt).toLocaleString() || '',
                     profile_pic: data.authorId.profilePictureLink || defaultProfilePic,
-                    thumbnail_url: data.thumbnail_url
+                    thumbnail_url: data.thumbnail_url,
+                    likes: data.likes || [],
+                    dislikes: data.dislikes || []
                 });
 
                 setFound(true)
