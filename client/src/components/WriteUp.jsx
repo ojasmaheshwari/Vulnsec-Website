@@ -80,8 +80,6 @@ const WriteUp = () => {
                     dislikeButtonRef.current.classList.add('bg-red-100');
                     likeButtonRef.current.classList.remove('bg-blue-100');
                 }
-
-                reactions.refresh();
             })
             .catch(err => {
                 toast.error(`${err}`);
